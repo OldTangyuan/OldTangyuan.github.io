@@ -4,25 +4,17 @@
   
     
     <entry>
-      <title>Hello World</title>
-      <link href="/2026/04/14/hello-world/"/>
-      <url>/2026/04/14/hello-world/</url>
+      <title>老汤圆の博客站正式建立啦！</title>
+      <link href="/2026/05/02/first_post/"/>
+      <url>/2026/05/02/first_post/</url>
       
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start">Quick Start</h2><h3 id="Create-a-new-post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+        <content type="html"><![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p><p>接下来，我也会创作各种各样有意思的技术内容或有趣知识</p><p>内容包括但不限于：</p><p>Python</p><p>机器学习</p><p>编程开发</p><p>学习心得</p><p>技术教程</p><p>LLM相关<br>…</p><p>最后希望大家能多多支持，多多关照捏~</p>]]></content>
       
-      
-      <categories>
-          
-          <category> 前端 </category>
-          
-      </categories>
       
       
         <tags>
             
-            <tag> Hexo </tag>
-            
-            <tag> 设计 </tag>
+            <tag> 建站宣言 </tag>
             
         </tags>
       
