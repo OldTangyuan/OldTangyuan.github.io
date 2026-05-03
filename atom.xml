@@ -10,14 +10,103 @@
   <rights>All rights reserved 2026, 老汤圆</rights>
   <subtitle>老汤圆的博客</subtitle>
   <title>老汤圆の小窝</title>
-  <updated>2026-05-02T14:50:43.086Z</updated>
+  <updated>2026-05-03T12:56:50.270Z</updated>
+  <entry>
+    <author>
+      <name>老汤圆</name>
+    </author>
+    <category term="Python" scheme="http://example.com/categories/Python/"/>
+    <category term="字典" scheme="http://example.com/tags/%E5%AD%97%E5%85%B8/"/>
+    <category term="集合" scheme="http://example.com/tags/%E9%9B%86%E5%90%88/"/>
+    <category term="视图" scheme="http://example.com/tags/%E8%A7%86%E5%9B%BE/"/>
+    <category term="哈希表" scheme="http://example.com/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/"/>
+    <content>
+      <![CDATA[<h1>Python字典</h1><p>一个有意思的事实是，Python 的字典的 <code>.keys()</code> 和 <code>.items()</code> 方法返回的是两个内置的视图对象，且无法被外部直接拿去使用（但可以获取该实例）。它们属于<strong>字典视图</strong>（在 Python 2 中是以列表形式显现的，因为无意义占用内存，所以在 Python 3 中被改为了现在的视图）。</p><p>当然，因为字典使用的是哈希表，所以其查询速度比序列更快（但是占用内存也更大，因为哈希表需要保留约 1/3 的空间）。</p><p>值得一提的是，创建字典字面量 <code>{a:1, b:2}</code> 比使用构造函数 <code>dict(a=1, b=2)</code> 效率更高（书中写的是 set，不过我想字典应该也差不多）。而且在创建一个类实例时，内部也会构建一个哈希表，因此应当在 <code>__init__</code> 中来创建字典实例，这样字典与实例就是共用的同一个哈希表（在方法中创建会新建一个哈希表），这样可以节省内存（不过好像一个进程只有效一次？这部分我没太看懂）。</p><h1>Python集合</h1><p>很有意思的是，Python 的 set 实现了数学意义上对集合的所有使用方法，包括交集、并集、差集、对称差集等，且 set 里面的内容必须是可哈希的（但 set 本身不可哈希，因此 set 无法嵌套，而 <code>frozenset</code> 是可哈希的）。不过鉴于 Python 每次创建进程时哈希码都会有所不同，因此 set 里面的元素是完全无序的。</p><p>如果想消除一个序列中的重复项同时保持顺序，可以使用 <code>dict.fromkeys(l)</code>，其中 <code>l</code> 为序列。此方法会把 <code>l</code> 映射为字典的 <code>.keys()</code> 视图，该视图会像集合一样删除重复项，但重要的是它能保留顺序（Python 3.7+ 中字典保持插入顺序），因此你可以把它转为序列重新使用。当然，鉴于 <code>.keys()</code> 和 <code>.items()</code> 的这种特性，它们是可以和 set 进行集合运算的！</p>]]>
+    </content>
+    <id>http://example.com/2026/05/03/python-dict/</id>
+    <link href="http://example.com/2026/05/03/python-dict/"/>
+    <published>2026-05-03T12:52:29.000Z</published>
+    <summary>
+      <![CDATA[<h1>Python字典</h1>
+<p>一个有意思的事实是，Python 的字典的 <code>.keys()</code> 和 <code>.items()</code> 方法返回的是两个内置的视图对象，且无法被外部直接拿去使用（但可以获取该实例）。它们属于<strong>字]]>
+    </summary>
+    <title>Python 字典与集合的有趣事实</title>
+    <updated>2026-05-03T12:56:50.270Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>老汤圆</name>
+    </author>
+    <category term="Python" scheme="http://example.com/categories/Python/"/>
+    <category term="Python" scheme="http://example.com/tags/Python/"/>
+    <category term="数据结构" scheme="http://example.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    <category term="排序" scheme="http://example.com/tags/%E6%8E%92%E5%BA%8F/"/>
+    <content>
+      <![CDATA[<h1>Python字典</h1><p>Python 的很多东西其实都是基于 dict（函数的形参在内部就使用了 dict 结构），有人说过 Python 其实就是个包裹在一堆语法糖中的字典，也正因此 Python 对 dict 进行了特殊优化，处理速度非常快。set 也是同理，Python 的 set 比其他语言高级不少，支持了基本数学上所有的集合方法，在检索方面相较于列表也是速度更快的。</p><h1>Python队列</h1><p>列表虽然功能强大，理论上可以作为大部分容器来使用，但实际上在针对很多问题时列表并不是最好的选择。比如针对 FIFO 的问题时，deque（双端队列）是更好的选择，因为它从左边以及右边增删元素都是 O(1)，还可以设置 maxlen 可选参数来指定队列长度，队列满时左边新增右边就删，反之同理。deque 还有一些特殊方法如 rotate，可以从某一端取出指定数量的元素加到另一端，也是相当有意思的（注意，deque 从中间取元素的效率并不高）。</p><p>当然，queue 模块中的队列在一些情况下也是不错的选择，但需要注意的是，queue.Queue 指定 maxsize 满后并不会删除元素，而是会阻塞等待元素取走再添加。</p><p>asyncio 中的队列底层是基于 deque 等数据结构实现的，并非专有的异步队列，而是结合了异步等待机制（我一直以为会有完全专属于异步的队列呢）。</p><h1>Python排序算法</h1><p>还有，Python 的排序算法是 Timsort，是一个非常高效的算法，创始人 Tim 同样也是 Python 的老行家了，Python 之禅就出于他手。</p><p>说到排序，就不得不提到 key 关键参数了，这在很多语言中并不常见，它可以通过指定 key 来实现一些特殊的排序，比如可以用 key=int 对一个只包含数字字符串的列表进行数值排序（key 需要是一个函数），它最大的优点是排序过程中每个元素只会被调用一次 key 函数。（值得一提的是，max 和 min 函数也有 key 可选参数）</p>]]>
+    </content>
+    <id>http://example.com/2026/05/03/python-tips/</id>
+    <link href="http://example.com/2026/05/03/python-tips/"/>
+    <published>2026-05-03T12:48:30.000Z</published>
+    <summary>
+      <![CDATA[<h1>Python字典</h1>
+<p>Python 的很多东西其实都是基于 dict（函数的形参在内部就使用了 dict 结构），有人说过 Python 其实就是个包裹在一堆语法糖中的字典，也正因此 Python 对 dict 进行了特殊优化，处理速度非常快。set 也是同理]]>
+    </summary>
+    <title>Python 小知识：字典、队列与排序</title>
+    <updated>2026-05-03T12:57:05.021Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>老汤圆</name>
+    </author>
+    <category term="Python" scheme="http://example.com/categories/Python/"/>
+    <category term="切片" scheme="http://example.com/tags/%E5%88%87%E7%89%87/"/>
+    <category term="slice" scheme="http://example.com/tags/slice/"/>
+    <category term="Python小知识" scheme="http://example.com/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+    <content>
+      <![CDATA[<h1>Python切片</h1><p>切片远比你想象的强大。你常见的惯用法可能是 <code>list[start:stop:step]</code>，但事实上 Python 支持多维切片，也就是 <code>[i, j]</code>，它会作为元组传入。之所以 Python 原生库很少见到多维切片，是因为基本所有序列都是一维的（<code>memoryview</code> 有可能不是），而对于 <code>numpy</code> 来说，它就可以通过多维切片来进行更方便的处理，比如：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array[<span class="number">3</span>:, :<span class="number">3</span>]</span><br></pre></td></tr></table></figure><h2 id="切片赋值">切片赋值</h2><p>可变序列（如列表）的切片可以被同一种序列的内容替换，这也是相当方便的处理。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">list</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</span><br><span class="line"><span class="built_in">list</span>[<span class="number">2</span>:] = [<span class="number">114514</span>]</span><br><span class="line"><span class="comment"># list 变为 [1, 2, 114514]</span></span><br></pre></td></tr></table></figure><h2 id="使用-slice-对象">使用 slice 对象</h2><p>序列的切片实际上是使用了 <code>slice</code> 函数，<code>list[:]</code> 等同于 <code>list[slice(None, None)]</code>。</p><p>这有什么好处呢？好处就是你可以对切片进行命名。比如对于比较规整的字符串，你可以给一个专门切名字的切片命名为：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name = <span class="built_in">slice</span>(<span class="literal">None</span>, <span class="number">10</span>)</span><br></pre></td></tr></table></figure><p>调用时只需使用 <code>list[name]</code> 就可以完成切片，大大增加了可读性。</p><h2 id="注意嵌套列表的构建">注意嵌套列表的构建</h2><p>对于嵌套列表，需要注意的是，最好不要使用 <code>*</code> 来复制嵌套列表，而应该使用列表推导式，以防止内部嵌套的列表指向的是同一个列表导致的错误。</p><p>例如 <code>[[[], []], [[], []]]</code> 就是一个需要预防这种问题的嵌套列表——如果用乘法构造类似结构，很容易让子列表共享同一引用，造成意外修改。</p>]]>
+    </content>
+    <id>http://example.com/2026/05/03/python-slice/</id>
+    <link href="http://example.com/2026/05/03/python-slice/"/>
+    <published>2026-05-03T12:44:45.000Z</published>
+    <summary>
+      <![CDATA[<h1>Python切片</h1>
+<p>切片远比你想象的强大。你常见的惯用法可能是 <code>list[start:stop:step]</code>，但事实上 Python 支持多维切片，也就是 <code>[i, j]</code>，它会作为元组传入。之所以 Python]]>
+    </summary>
+    <title>Python 切片进阶用法</title>
+    <updated>2026-05-03T12:56:57.915Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>老汤圆</name>
+    </author>
+    <category term="前端" scheme="http://example.com/categories/%E5%89%8D%E7%AB%AF/"/>
+    <category term="Hexo" scheme="http://example.com/tags/Hexo/"/>
+    <category term="设计" scheme="http://example.com/tags/%E8%AE%BE%E8%AE%A1/"/>
+    <category term="建站" scheme="http://example.com/tags/%E5%BB%BA%E7%AB%99/"/>
+    <content>
+      <![CDATA[<h1>引言</h1><p>作为本站第一个正式博客技术分享，我觉得应该很多人会想了解像这样一个博客站是如何搭建的。<br>其实很简单，按接下来的步骤一步步来，你也能0成本搭建一个属于自己的博客站点。<br>接下来让我们进入正题。</p><h1>正文</h1><h2 id="Hexo的搭建">Hexo的搭建</h2><p>首先，要能0成本搭建一个博客站点，那我们就只能通过静态博客来搭建。而<a href="https://hexo.io/">Hexo</a>便是这样一个很不错的静态博客框架，所以我们需要先在本地搭建一个Hexo。</p><p>如果你想要了解关于Hexo更详细的内容，可以看看它的<a href="https://hexo.io/docs/">文档</a>来获得更全面的信息。</p><h3 id="安装Watt-Toolkit-Steam">安装Watt Toolkit(Steam++)</h3><p>为了能正常访问GitHub，你可以下载并安装<a href="https://steampp.net/">Watt Toolkit</a>，这是一款免费的加速器，可以对Steam、GitHub等进行加速。</p><h3 id="安装Node-js和Git">安装Node.js和Git</h3><p>为了能部署Hexo，我们需要首先安装<a href="http://nodejs.org/">Node.js</a>（建议版本12.0及以上，推荐使用最新LTS版本）。<br>相关安装教程可以自行在Node.js或Hexo文档查看，这里就不多赘述了。</p><p>安装完成后可以运行以下命令来检测是否成功：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure><p>为了让npm下载速度更快，我们也可以通过以下指令来换源：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmmirror.com</span><br><span class="line">npm config get registry</span><br></pre></td></tr></table></figure><p>如果返回 <strong><a href="https://registry.npmmirror.com">https://registry.npmmirror.com</a></strong> 代表成功更改镜像源。</p><p>接下来是Git的安装，安装Git是为了方便之后将静态博客推送到GitHub Pages（如果不理解没关系，照着步骤做就行）。</p><p>Windows系统需要下载并安装<a href="https://git-scm.com/download/win">Git</a>。<br>Mac系统可以使用<a href="https://sourceforge.net/projects/git-osx-installer/">安装程序</a>。<br>Linux (Ubuntu, Debian)只需执行以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> apt-get install git-core</span><br></pre></td></tr></table></figure><p>Linux (Fedora, Red Hat, CentOS)则需要执行如下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> yum install git-core</span><br></pre></td></tr></table></figure><p>把这两个安装完成后，我们便可以进行下一步了。</p><h3 id="安装Hexo">安装Hexo</h3><p>安装Hexo相当简单，我们只需使用npm命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure><p>这样一来，我们便完成了所有需要的安装任务。</p><h3 id="正式搭建">正式搭建</h3><p>安装完Hexo后，我们便可以正式搭建静态博客了。<br>首先按顺序执行以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo init &lt;folder&gt;</span><br><span class="line"><span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure><p>其中<code>&lt;folder&gt;</code>改为你所想要的文件名，比如<code>my_blog</code>（最好使用英文，且不要使用特殊字符）。</p><p>初始化完成后你应该能看到以下项目文件夹目录：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure><p>那么恭喜你，你已经完成了最基础的博客站搭建（海豹拍肚皮声.wav）。</p><p>如果你已经迫不及待想看看搭建完成的网站，可以运行以下命令来看看效果如何：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure><p>等终端输出完信息，把 <a href="http://localhost:4000/">http://localhost:4000/</a> 输入进网页便打开啦~</p><h3 id="配置博客">配置博客</h3><h4 id="基础博客配置">基础博客配置</h4><p>打开刚部署好的博客，你会发现，显示的东西相当简约，而且与自己一点关系没有，全是英文看得云里雾里。<br>这其实是因为我们还没配置好博客。<br>所以接下来你可以在相关文件夹根目录中寻找<a href="https://hexo.io/zh-cn/docs/configuration">_config.yml</a>这个文件，并在其中进行一些基础配置。<br>配置完后，你只需刷新一下网页，就会发现博客已经变成符合你信息的样子了。</p><h4 id="切换主题">切换主题</h4><p>当然，你可能还是很不满意，觉得Hexo这个默认的主题很不好看。<br>那你就可以尝试一下换个主题。<br>首先，你可以在这个<a href="https://hexo.io/themes/">网站</a>寻找自己喜欢的主题。<br>比如本站使用的是<a href="https://github.com/everfu/hexo-theme-solitude">Solitude</a>这个主题。</p><p>要下载主题，你可以使用这个指令（这里以Solitude为例）：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-theme-solitude</span><br></pre></td></tr></table></figure><p>但需要<strong>注意</strong>的是，这样安装的主题会安装在<code>node_modules</code>文件夹里面，在配置主题时可能会相当不方便。<br>你可以尝试把整个主题文件移动到<code>themes</code>文件夹中以方便配置。<br>当然，如果你就是想放在<code>node_modules</code>文件夹中，那在根目录的<code>_config.yml</code>文件的<code>theme</code>配置一定要填对应主题名字如<code>solitude</code>，而不是文件夹名字。</p><p>而在<code>themes</code>文件夹中的主题则需要在根目录的<code>_config.yml</code>文件的<code>theme</code>配置中填入对应文件夹名，如<code>hexo-theme-solitude</code>，这样才能正常使用。</p><h4 id="主题配置">主题配置</h4><p>你可能发现了，即使切换了主题，整个页面依然是相当简约。<br>所以，接下来你需要配置主题。<br>首先，在对应主题文件夹中找到主题的<code>_config.yml</code>文件，一般你都可以在对应主题的官网寻找到主题的配置文档。<br>比如Solitude的<a href="https://solitude.js.org/cn/getting-started/introduction">配置文档</a>。</p><p>但有些不愿折腾的小白可能看完就想直接放弃。<br>所以一个小妙招就是你可以让AI帮你完成一些配置。<br>比如GitHub Copilot或Windsurf这类代码Agent软件，而你只需要在输入框让它先搜索对应主题文档再帮你完成配置就可以啦~<br>在完成这一切后，你就能拥有一个像本站这样美观的一个博客。</p><h2 id="编写博客">编写博客</h2><p>在搭建完博客后，你便可以通过一些指令来实现最基础的编写。<br>比如通过以下指令创建一个新文章：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &lt;title&gt;</span><br></pre></td></tr></table></figure><p>然后你就可以在根目录的<code>source</code>文件夹中的<code>_posts</code>文件夹找到对应的md文件，打开这个文件你便可以通过编写markdown文档来写博客啦~</p><p>当然，如果你需要的是生成一个新界面而不是文章，就可以使用以下命令（这里以about界面举例）：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page about</span><br></pre></td></tr></table></figure><p>更多的内容这里就不多赘述了，感兴趣可以看看<a href="https://hexo.io/zh-cn/docs/writing">Hexo写作文档</a>教程。</p><h2 id="在GitHub-Pages搭建静态博客">在GitHub Pages搭建静态博客</h2><p>之所以我们能0成本搭建一个博客，正是因为我们能通过GitHub Pages来蹭一个域名。<br>而在那之前，我们需要先对git进行配置。</p><h3 id="Git的配置">Git的配置</h3><p>首先你需要一个GitHub账号，然后你需要输入以下命令，分别是你的GitHub用户名和登录GitHub的邮箱：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;&lt;Your GitHub username here&gt;&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;&lt;Your GitHub email here&gt;&quot;</span></span><br></pre></td></tr></table></figure><p>接着创建SSH密钥，按如下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;&lt;Your GitHub email here&gt;&quot;</span></span><br></pre></td></tr></table></figure><p>对应密钥存储目录会在终端显示，例如Windows系统为 <strong>C:\Users&lt;Your user name&gt;.ssh\id_rsa.pub</strong>。<br>接下来你只需要用文本编辑器打开并完整复制里面的内容即可。</p><p>接着点击这个<a href="https://github.com/settings/keys">链接</a>，并点击 <strong>New SSH key</strong>。<br>把复制好的密钥填进去即可，Title可以随便写。<br>最后点击 <strong>Add SSH Key</strong> 即可完成。</p><p>为了验证是否配置成功，请输入以下指令。<br><strong>注意</strong>：在进行这一步时请关闭Watt Toolkit加速器，否则会出现连接不上的错误。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure><p>如果显示询问 <strong>Are you sure you want to continue connecting (yes/no/[fingerprint])?</strong>，这是正常现象，直接输入<code>yes</code>即可。<br>若出现以下内容即为配置成功：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hi &lt;username&gt;! You&#x27;ve successfully authenticated, but GitHub does not provide shell access</span><br><span class="line">Connection to github.com closed.</span><br></pre></td></tr></table></figure><h3 id="搭建GitHub-Pages仓库">搭建GitHub Pages仓库</h3><p>点击这个<a href="https://github.com/new">链接</a>新建一个仓库。<br>仓库名字选择 <strong>&lt;你的GitHub用户名&gt;.github.io</strong>，然后直接Create即可。</p><p>创建完成后点击对应仓库的 <strong>Settings</strong> 选项。<br>接着点击下面的 <strong>Pages</strong> 选项。<br>你会在写着 <strong>Build and deployment</strong> 下方找到一个框，点击它并选择为 <strong>Deploy from a branch</strong>（更合适的做法是使用Github Actions，具体做法请自行查阅），然后选择分支为 <code>main</code>（如果没有则选 <code>master</code>，或后续推送后会出现 <code>main</code>）。<br>这样一来你便完成了GitHub Pages仓库的搭建并白嫖到了一个域名 <strong>https://&lt;你的GitHub用户名&gt;.github.io/</strong>。</p><h3 id="推送Hexo静态博客到GitHub仓库">推送Hexo静态博客到GitHub仓库</h3><p>首先我们在本地博客文件夹找到 <strong>_config.yml</strong> 文件。<br>打开后翻到最底下找到 <strong>deploy</strong> 部分，并将其中的内容改为：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">&lt;Your</span> <span class="string">GitHub</span> <span class="string">repo</span> <span class="string">here&gt;.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure><p>保存后我们还需安装一个小插件以通过Git来推送静态博客：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure><p>接着依次输入：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean   <span class="comment"># 清除已有的静态博客内容</span></span><br><span class="line">hexo g       <span class="comment"># 生成静态博客内容</span></span><br><span class="line">hexo d       <span class="comment"># 推送到对应的仓库</span></span><br></pre></td></tr></table></figure><p>完成后，你便可以通过 <strong>https://&lt;你的GitHub用户名&gt;.github.io</strong> 来访问博客了。</p><h2 id="使用Netlify进行加速">使用Netlify进行加速</h2><p>完成上述步骤后你会发现，自己这博客站慢成这样用鸡毛啊。<br>但是没关系，我们可以通过Netlify来进行加速，并且完全免费哦。</p><h3 id="登录Netlify">登录Netlify</h3><p>首先需要先打开<a href="https://www.netlify.com/">Netlify</a>的官网进行登录。<br>登录完成后点击右上角的 <strong>Add new project</strong>。<br>在下面的 <strong>Import a Git repository</strong> 中选择 <strong>GitHub</strong>。<br>在允许Netlify访问仓库后就可以选择 <strong>&lt;你的GitHub用户名&gt;.github.io</strong> 这个仓库来搭建啦。<br>接着在 <strong>deploy project</strong> 界面中你需要设置 <strong>Project name</strong>，这边建议可以使用 <strong>&lt;你的GitHub用户名&gt;</strong>。<br>接着滑到最底下并点击 <strong>Deploy xxx</strong> 就可以完成搭建啦。<br>搭建完成后，你便可以通过 <strong>https://&lt;你的GitHub用户名&gt;.netlify.app/</strong> 来访问博客啦，而且速度快得多哦。</p><h2 id="博客的更新">博客的更新</h2><p>当你在本地更新了博客后，你只需运行以下指令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean   <span class="comment"># 清除已有的静态博客内容</span></span><br><span class="line">hexo g       <span class="comment"># 生成静态博客内容</span></span><br><span class="line">hexo d       <span class="comment"># 推送到对应的仓库</span></span><br></pre></td></tr></table></figure><p>然后再打开自己的博客网站，你就会发现博客界面已经成功更新，相当的简单。</p><h1>结语</h1><p>在经过这些操作以后，你就成功搭建了一个属于自己的博客了。<br>如果你最终成功了，那么就让我给你鼓个掌（海豹拍肚皮声.wav）。<br>而之后，你就可以尽情的进行博客的创作啦~</p><p>最后，如果你发现了这篇文章有任何纰漏，可以在评论中告知我，我会相当感谢并及时更改。<br>因为这是我的首篇正式博客，所以有所缺陷也请见谅。<br>希望大家看完后能有所收获并成功搭建一个属于自己的博客，感谢阅读~</p><h1>参考文献与致谢</h1><p>本篇博客参考了<a href="https://blog.xingchencloud.top/p/44443bb0.html">Hexo 静态博客搭建教程</a>的部分内容。<br>最后感谢<a href="https://blog.xuxiny.top/">XXY</a>提供的一些技术支持。</p>]]>
+    </content>
+    <id>http://example.com/2026/05/03/build-hexo/</id>
+    <link href="http://example.com/2026/05/03/build-hexo/"/>
+    <published>2026-05-03T09:07:05.000Z</published>
+    <summary>
+      <![CDATA[<h1>引言</h1>
+<p>作为本站第一个正式博客技术分享，我觉得应该很多人会想了解像这样一个博客站是如何搭建的。<br>
+其实很简单，按接下来的步骤一步步来，你也能0成本搭建一个属于自己的博客站点。<br>
+接下来让我们进入正题。</p>
+<h1>正文</h1>
+<h2 id]]>
+    </summary>
+    <title>Hexo静态博客-0成本搭建一个像本站一样的博客站，并使用Netlify加速</title>
+    <updated>2026-05-03T12:35:14.445Z</updated>
+  </entry>
   <entry>
     <author>
       <name>老汤圆</name>
     </author>
     <category term="建站宣言" scheme="http://example.com/tags/%E5%BB%BA%E7%AB%99%E5%AE%A3%E8%A8%80/"/>
     <content>
-      <![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p><p>接下来，我也会创作各种各样有意思的技术内容或有趣知识</p><p>内容包括但不限于：</p><p>Python</p><p>机器学习</p><p>编程开发</p><p>学习心得</p><p>技术教程</p><p>LLM相关<br>…</p><p>最后希望大家能多多支持，多多关照捏~</p>]]>
+      <![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p><p>接下来，我也会创作各种各样有意思的技术内容或有趣知识</p><p>内容包括但不限于：<br>Python<br>机器学习<br>编程开发<br>学习心得<br>技术教程<br>LLM相关<br>…</p><p>最后希望大家能多多支持，多多关照捏~</p>]]>
     </content>
     <id>http://example.com/2026/05/02/first_post/</id>
     <link href="http://example.com/2026/05/02/first_post/"/>
@@ -25,13 +114,14 @@
     <summary>
       <![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p>
 <p>接下来，我也会创作各种各样有意思的技术内容或有趣知识</p>
-<p>内容包括但不限于：</p>
-<p>Python</p>
-<p>机器学习</p>
-<p>编程开发</p>
-<]]>
+<p>内容包括但不限于：<br>
+Python<br>
+机器学习<br>
+编程开发<br>
+学习心得<br>
+技]]>
     </summary>
     <title>老汤圆の博客站正式建立啦！</title>
-    <updated>2026-05-02T14:50:43.086Z</updated>
+    <updated>2026-05-03T09:25:11.570Z</updated>
   </entry>
 </feed>
