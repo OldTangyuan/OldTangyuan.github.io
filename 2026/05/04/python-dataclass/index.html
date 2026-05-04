@@ -1,0 +1,597 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python 数据类：namedtuple、NamedTuple 与 dataclass | 老汤圆の小窝</title><noscript>开启JavaScript才能访问本站哦~</noscript><link rel="icon" href="/img/avater.jpg"><link rel="stylesheet" href="/css/index.css?v=3.0.21"><link rel="canonical" href="http://example.com/2026/05/04/python-dataclass/index.html"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"><!-- Feature-specific CSS--><!-- aplayer--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css"><!-- swiper--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.0.5/swiper-bundle.min.css"><!-- fancybox ui--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.min.css"><!-- katex--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"><!-- Open Graph--><meta name="description" content="Python 数据类 Python 中的数据类可通过三种数据类构建器来构建，分别为 collections.namedtuple，typing.NamedTuple 以及 dataclasses.dataclass（前两者还有个名字叫具名元组）。 数据类的一大好处就是已经定义好了一些魔法方法，比如 __str__、__eq__ 什么的，正常的类你 print 出来的东西是其内存地址（在 CPyth">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 数据类：namedtuple、NamedTuple 与 dataclass">
+<meta property="og:url" content="http://example.com/2026/05/04/python-dataclass/index.html">
+<meta property="og:site_name" content="老汤圆の小窝">
+<meta property="og:description" content="Python 数据类 Python 中的数据类可通过三种数据类构建器来构建，分别为 collections.namedtuple，typing.NamedTuple 以及 dataclasses.dataclass（前两者还有个名字叫具名元组）。 数据类的一大好处就是已经定义好了一些魔法方法，比如 __str__、__eq__ 什么的，正常的类你 print 出来的东西是其内存地址（在 CPyth">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/python.jpeg">
+<meta property="article:published_time" content="2026-05-04T05:43:22.000Z">
+<meta property="article:modified_time" content="2026-05-04T05:47:53.088Z">
+<meta property="article:author" content="老汤圆">
+<meta property="article:tag" content="dataclass">
+<meta property="article:tag" content="namedtuple">
+<meta property="article:tag" content="数据类">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/python.jpeg"><!-- pwa--><meta name="theme-color" content="#111827"><meta name="apple-mobile-web-app-status-bar-style" content="#111827"><link rel="manifest" href="/manifest.json"><meta name="msapplication-TileColor" content="#111827"><link rel="mask-icon" href="/img/pwa/favicon.png" color="#111827"><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/favicon.jpg"><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/favicon_16.jpg"><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/favicon_32.jpg"><link rel="bookmark" href="/img/pwa/favicon.jpg"><script>console.log(' %c Solitude %c ' + '3.0.21' + ' %c https://github.com/everfu/hexo-theme-solitude',
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
+</script><script>let mdate = "7-7,9-18,12-13";
+mdate = (mdate.split(","));
+let ndate = new Date();
+for (let i of mdate) {
+    if (i === (ndate.getMonth()+1) + "-" + (ndate.getDate())) {
+        document.documentElement.classList.add('memorial');
+    }
+}
+</script><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
+
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
+
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+
+                if (name && keyObj[name]) return
+
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+            addEventListenerPjax: (ele, event, fn, option = false) => {
+              ele.addEventListener(event, fn, option)
+              utils.addGlobalFn('pjax', () => {
+                  ele.removeEventListener(event, fn, option)
+              })
+            },
+            diffDateFormat: (selector) => {
+                selector.forEach(item => {
+                    const date = new Date(item.getAttribute('datetime') || item.textContent);
+                    item.textContent = (date.getMonth() + 1).toString()+'/'+date.getDate().toString();
+                });
+            },
+        }
+    })()</script><!-- theme--><script>initTheme = () => {
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined)
+        document.documentElement.setAttribute('data-theme', 'dark');
+    else
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    typeof rm === 'object' && rm.mode(cachedMode === undefined || cachedMode === 'dark')
+}
+initTheme()</script><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: {"preload":true,"path":"/search.xml"},
+    runtime: '2026-05-02 22:20:00',
+    lazyload: {
+        enable: true,
+        error: '/img/error_load.avif'
+    },
+    copyright: {"limit":50,"author":"作者: 老汤圆","link":"链接: ","source":"来源: 老汤圆の小窝","info":"著作权归作者所有。 商业转载请联系作者获得授权，非商业转载请注明出处。"},
+    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
+    randomlink: true,
+    lang: {"theme":{"dark":"已切换至深色模式","light":"已切换至浅色模式"},"copy":{"success":"复制成功","error":"复制失败"},"backtop":"返回顶部","time":{"day":"天前","hour":"小时前","just":"刚刚","min":"分钟前","month":"个月前"},"day":" 天","f12":"开发者模式已打开，请遵循GPL协议。","totalk":"无需删除空行，直接输入评论即可","search":{"empty":"找不到你查询的内容：${query}","hit":"找到 ${hits} 条结果，用时 ${time} 毫秒","placeholder":"输入关键词快速查找","count":"共 <b>${count}</b> 条结果。","loading":"搜索中..."},"barrage":{"title":"热评"}},
+    aside: {
+        state: {
+            morning: "✨ 早上好，新的一天开始了",
+            noon: "🍲 午餐时间，来休息一下吧",
+            afternoon: "🌞 下午好呀",
+            night: "🌙 早点休息，别熬夜啦",
+            goodnight: "晚安 😴",
+        },
+        witty_words: ["I code, therefore I debug.","It’s not a bug — it’s an undocumented feature.","Code never lies, comments sometimes do.","It works on my machine...","sudo rm -rf / (DO NOT REALLY RUN THIS COMMAND)","Think. Code. Break. Fix. Repeat.","Code is cheap. Show me the talk XD.","Talk is cheap. Show me the code.","人生苦短，我缩进去了","缩进不对，报错加倍；空格一乱，真爱完蛋","炼丹一时爽，过拟合火葬场","数据洗得净，模型吻得深","古法编程，非遗传承","跑通靠缘分，收敛看运气","代码千万行，注释第一行；命名不规范，同事两行泪","能跑就别动它.jpg"],
+        witty_comment: {
+            prefix: '好久不见，',
+            back: '欢迎再次回来，',
+        },
+    },
+    covercolor: {
+        enable: true
+    },
+    comment: {"avatar":"https://gravatar.com/avatar","commentBarrage":true},
+    lightbox: 'fancybox',
+    right_menu: {"mode":{"dark":"深色模式","light":"浅色模式"},"img_error":"此图片无法复制与下载","music":{"start":"播放音乐","stop":"暂停音乐"},"barrage":{"open":"显示热评","close":"关闭热评"},"translate":true,"ctrlOriginalMenu":"按住Ctrl+右键可打开浏览器右键菜单"},
+    translate: {"translateDelay":0,"defaultEncoding":2},
+    lure: {"jump":"404 Not Found","back":"ヾ(≧∇≦*)ゝHey, hey, you fell for it."},
+    expire: {"time":30,"position":"top","text_prev":"This article expired ","text_next":" day ago, if the content does not match, please contact the webmaster to update it."},
+};</script><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: true,
+    ai_text: false,
+    color: false,
+}</script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="老汤圆の小窝" type="application/atom+xml">
+</head><body id="body"><div><canvas id="universe"></canvas></div><div><div id="loading-box" onclick="preloader.endLoading();" style="zoom:1"><div class="loading-bg"><img class="loading-img nolazyload" src="/img/loading_2.gif" alt="loading image"></div></div><script>const preloader = {
+    isLoaded: false,
+    endLoading: () => {
+        if (!preloader.isLoaded) {
+            document.getElementById('loading-box').classList.add('loaded');
+            preloader.isLoaded = true;
+            preloader.togglePaceDone();
+        }
+    },
+    initLoading: () => {
+        document.getElementById('loading-box').classList.remove('loaded');
+        preloader.isLoaded = false;
+        preloader.togglePaceDone();
+    },
+    togglePaceDone: () => {
+        document.getElementById('body').className = preloader.isLoaded ? 'pace-done' : '';
+    }
+}
+
+window.addEventListener('load', () => {
+    preloader.endLoading();
+});
+
+window.addEventListener('pjax:send', () => {
+    preloader.initLoading();
+});
+
+document.addEventListener('pjax:complete', () => {
+    preloader.endLoading();
+});
+
+setTimeout(() => {
+    preloader.endLoading();
+}, 5000);</script></div><div><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude fas fa-xmark"></i></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments" onclick="sco.hideConsole()"><div class="card-content"><div class="author-content-item-tips">互动</div><div class="author-content-item-title">最新评论<a class="recent-comment-more" href="/recentcomment/" title="最近评论"><i class="solitude fas fa-circle-chevron-right"></i></a></div></div><div class="console_recentcomments"><script pjax>(async () => {
+    document.querySelector('.console-card .console_recentcomments').textContent = `加载中...`
+    const emojiReg = /<img class="tk-owo-emotion" [^>]+>/g
+    let cache = utils.saveToLocal.get('twikoo-recent-comments-console')
+    if (cache) {
+        setHtml(document.querySelector('.console-card .console_recentcomments'), cache)
+        return
+    }
+    let ls = []
+
+    await fetch('https://twikoo-blogs-comment.netlify.app/.netlify/functions/twikoo', {
+        method: "POST",
+        body: JSON.stringify({
+            "event": "GET_RECENT_COMMENTS",
+            "includeReply": true,
+            "pageSize": 6
+        }),
+        headers: {'Content-Type': 'application/json'}
+    }).then(res => res.json()).then(async ({data}) => {
+        for (const i of data) {
+            if (i.avatar === undefined) i.avatar = 'https://gravatar.com/avatar/avatar/d615d5793929e8c7d70eab5f00f7f5f1?d=mp'
+            let title = ''
+            if (i.url) {
+                await fetch(i.url).then(res => res.text()).then(html => {
+                    const parser = new DOMParser()
+                    const doc = parser.parseFromString(html, 'text/html')
+                    title = doc.querySelector('title').innerText
+                }).catch(() => {
+                    title = i.url
+                })
+            }
+            if (title.indexOf('|') > 0) {
+                title = title.split('|')[0]
+            }
+            ls.push({
+                avatar: i.avatar,
+                nick: i.nick,
+                title: title,
+                content: i.comment,
+                url: i.url + '#' + i.id,
+                time: i.created
+            })
+        }
+        setHtml(document.querySelector('.console-card .console_recentcomments'), ls)
+        utils.saveToLocal.set('twikoo-recent-comments-console', ls, 0.2)
+    });
+
+    function setHtml(el, data) {
+        el.innerHTML = data.length !== 0 ? data.map(i => `
+            <div class="comment-card" title="${i.title}" onclick="pjax.loadUrl('${i.url}')">
+                <div class="comment-info">
+                    <img src="${i.avatar}" class="nolazyload" alt="${i.nick}">
+                    <div>
+                        <span class="comment-user">${i.nick}</span>
+                    </div>
+                    <time class="comment-time" datetime="${new Date(i.time)}"></time>
+                </div>
+                <div class="comment-content">${formatContent(i.content)}</div>
+                <div class="comment-title">
+                <i class="solitude fas fa-comment"></i>
+                ${i.title}</div>
+            </div>
+        `).join('') : `暂无评论...`
+        if (typeof utils !== 'undefined') utils.diffDateFormat(document.querySelectorAll('.comment-time'))
+        else {
+            document.addEventListener('pjax:complete', () => utils.diffDateFormat(document.querySelectorAll('.comment-time')))
+            document.addEventListener('DOMContentLoaded', () => utils.diffDateFormat(document.querySelectorAll('.comment-time')))
+        }
+    }
+
+    function formatContent(content) {
+        content = content.replace(emojiReg, '表情')
+        content = content.replace(/<\/*br>|[\s\uFEFF\xA0]+/g, '');
+        content = content.replace(/<img.*?>/g, '[图片]');
+        content = content.replace(/<a.*?>.*?<\/a>/g, '[链接]');
+        content = content.replace(/<pre.*?>.*?<\/pre>/g, '[代码]');
+        content = content.replace(/<.*?>/g, '');
+        return content
+    }
+})()</script></div></div></div><div class="console-card-group-right"><div class="console-card tags" onclick="sco.hideConsole()"><div class="card-content"><div class="author-content-item-tips">标签</div><div class="author-content-item-title">寻找感兴趣的领域</div></div><div class="card-tag-cloud"><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/%E8%AE%BE%E8%AE%A1/">设计<sup>1</sup></a><a href="/tags/%E5%BB%BA%E7%AB%99/">建站<sup>1</sup></a><a href="/tags/%E5%BB%BA%E7%AB%99%E5%AE%A3%E8%A8%80/">建站宣言<sup>1</sup></a><a href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/">数据类<sup>1</sup></a><a href="/tags/namedtuple/">namedtuple<sup>1</sup></a><a href="/tags/dataclass/">dataclass<sup>1</sup></a><a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式<sup>1</sup></a><a href="/tags/%E5%AD%97%E5%85%B8/">字典<sup>1</sup></a><a href="/tags/%E9%9B%86%E5%90%88/">集合<sup>1</sup></a><a href="/tags/%E8%A7%86%E5%9B%BE/">视图<sup>1</sup></a><a href="/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/">哈希表<sup>1</sup></a><a href="/tags/Python/">Python<sup>3</sup></a><a href="/tags/match-case/">match-case<sup>1</sup></a><a href="/tags/%E5%88%87%E7%89%87/">切片<sup>1</sup></a><a href="/tags/slice/">slice<sup>1</sup></a><a href="/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/">Python小知识<sup>1</sup></a><a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构<sup>1</sup></a><a href="/tags/%E6%8E%92%E5%BA%8F/">排序<sup>1</sup></a><a href="/tags/Unicode/">Unicode<sup>1</sup></a><a href="/tags/%E7%BC%96%E7%A0%81/">编码<sup>1</sup></a></div></div><div class="console-card history" onclick="sco.hideConsole()"><ul class="card-archive-list"><li class="item"><a href="/archives/2026/05/"><span class="date">2026/05</span><div class="count-group"><span class="count">8</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/"><span class="date">全部文章</span><div class="count-group"><span class="count">8</span><span class="unit">篇</span></div></a></li></ul></div></div></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="昼夜切换"><i class="solitude fas fa-circle-half-stroke"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="边栏显示控制"><i class="solitude fas fa-arrows-left-right-to-line"></i></span></div><div class="console-btn-item" id="consoleKeyboard" onclick="sco.switchKeyboard()"><span class="keyboardSwitch" title="键盘快捷键"><i class="solitude fas fa-keyboard"></i></span></div><div class="console-btn-item" id="consoleMusic" onclick="sco.musicToggle()"><span class="music-switch" title="音乐开关"><i class="solitude fas fa-compact-disc"></i></span></div><div class="console-btn-item on" id="consoleCommentBarrage" onclick="sco.switchCommentBarrage()"><span class="commentBarrage"><i class="solitude fas fa-comment"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div></div><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/recentcomment/"><div class="headline">评论</div><div class="length-num" id="twikoo_allcount"><i class="solitude fas fa-spinner fa-spin"></i></div><script pjax="pjax">(async () => {
+  await fetch('https://twikoo-blogs-comment.netlify.app/.netlify/functions/twikoo', {
+    method: "POST",
+    body: JSON.stringify({
+      "event": "GET_RECENT_COMMENTS",
+      "includeReply": true,
+      "pageSize": 999
+    }),
+    headers: {'Content-Type': 'application/json'}
+  }).then(res => res.json()).then(async ({data}) => {
+    document.querySelector('#twikoo_allcount').innerHTML = data.length
+  })
+})()</script></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude fas fa-circle-half-stroke"></i><span>显示模式</span></span></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">project</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" title="Solitude"><span class="back-menu-item-text">Solitude</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">video</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1GxaVzREGs" title="AIEcho"><span class="back-menu-item-text">AIEcho</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文章</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>友链</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/links/"><i class="solitude  fas fa-user-group"></i><span>友情链接</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>关于</span></a></li><li><a class="site-page child" href="/music/"><i class="solitude  fas fa-music"></i><span>音乐馆</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="card-tag-cloud"><a href="/tags/Hexo/">Hexo<sup>1</sup></a><a href="/tags/%E8%AE%BE%E8%AE%A1/">设计<sup>1</sup></a><a href="/tags/%E5%BB%BA%E7%AB%99/">建站<sup>1</sup></a><a href="/tags/%E5%BB%BA%E7%AB%99%E5%AE%A3%E8%A8%80/">建站宣言<sup>1</sup></a><a href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/">数据类<sup>1</sup></a><a href="/tags/namedtuple/">namedtuple<sup>1</sup></a><a href="/tags/dataclass/">dataclass<sup>1</sup></a><a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式<sup>1</sup></a><a href="/tags/%E5%AD%97%E5%85%B8/">字典<sup>1</sup></a><a href="/tags/%E9%9B%86%E5%90%88/">集合<sup>1</sup></a><a href="/tags/%E8%A7%86%E5%9B%BE/">视图<sup>1</sup></a><a href="/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/">哈希表<sup>1</sup></a><a href="/tags/Python/">Python<sup>3</sup></a><a href="/tags/match-case/">match-case<sup>1</sup></a><a href="/tags/%E5%88%87%E7%89%87/">切片<sup>1</sup></a><a href="/tags/slice/">slice<sup>1</sup></a><a href="/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/">Python小知识<sup>1</sup></a><a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构<sup>1</sup></a><a href="/tags/%E6%8E%92%E5%BA%8F/">排序<sup>1</sup></a><a href="/tags/Unicode/">Unicode<sup>1</sup></a><a href="/tags/%E7%BC%96%E7%A0%81/">编码<sup>1</sup></a></div></div><span class="sidebar-menu-item-title">网站信息</span><div class="webinfo"><div class="webinfo-item"><div class="item-name">全站字数 :</div><div class="item-count">6.8k</div></div></div></div></div><div><div id="keyboard-tips"><div class="keyboardTitle">博客快捷键</div><div class="keyboardList"><div class="keyboardItem"><div class="keyGroup"><div class="key">Shift</div><div class="key">K</div></div><div class="keyContent"><div class="content">关闭快捷菜单</div></div></div><div class="keyboardItem"><div class="keyGroup"><div class="key">Shift</div><div class="key">A</div></div><div class="keyContent"><div class="content">打开控制台</div></div></div><div class="keyboardItem"><div class="keyGroup"><div class="key">Shift</div><div class="key">M</div></div><div class="keyContent"><div class="content">播放/暂停音乐</div></div></div><div class="keyboardItem"><div class="keyGroup"><div class="key">Shift</div><div class="key">L</div></div><div class="keyContent"><div class="content">打开友链</div></div></div></div></div><script>const keyboard_addKeyup = (e) => {
+    if (e.key === 'Shift') {
+        document.getElementById('keyboard-tips').classList.remove('show');
+    }
+}
+
+const keyboard_addKeydown = (e) => {
+    const keyboards = [{"name":"关闭快捷菜单","key":"K","func":"keyboard"},{"name":"打开控制台","key":"A","sco":"showConsole"},{"name":"播放/暂停音乐","key":"M","sco":"musicToggle"},{"name":"打开友链","key":"L","url":"/links/"}];
+    if (e.key === 'Shift') {
+        document.getElementById('keyboard-tips').classList.add('show');
+    }
+
+    for (let i = 0; i < keyboards.length; i++) {
+        if (keyboards[i].url) {
+            if (keyboards[i].url.startsWith('http')) {
+                if (e.key === keyboards[i].key) {
+                    window.open(keyboards[i].url);
+                }
+            } else {
+                if (e.key === keyboards[i].key) {
+                    pjax.loadUrl(keyboards[i].url);
+                }
+            }
+        } else if (keyboards[i].sco) {
+            if (e.key === keyboards[i].key) {
+                sco[keyboards[i].sco]();
+            }
+        } else if (keyboards[i].func) {
+            if (e.key === keyboards[i].key) {
+                window[keyboards[i].func]();
+            }
+        }
+    }
+}
+
+function openKeyboard() {
+
+    window.addEventListener('keyup', keyboard_addKeyup);
+
+    window.addEventListener('keydown', keyboard_addKeydown);
+}
+function closeKeyboard() {
+
+    window.removeEventListener('keyup', keyboard_addKeyup);
+
+    window.removeEventListener('keydown', keyboard_addKeydown);
+}
+
+var sco_keyboards = localStorage.getItem('keyboard') === 'true'
+if (sco_keyboards) {
+    openKeyboard();
+    let keyboard = document.getElementById('consoleKeyboard');
+    keyboard?.classList.add('on');
+}</script></div><div><div class="needEndHide" id="rightside"><div class="rs_hide"><button class="translate" type="button" title="简繁转换">简</button><button class="mode" type="button" title="显示模式切换" onclick="sco.switchDarkMode()"><i class="fas fa-circle-half-stroke"></i></button><button class="aside pc" type="button" title="侧边栏" onclick="sco.switchHideAside()"><i class="fas fa-arrows-alt-h"></i></button><button class="keyboard pc" type="button" title="键盘快捷键" onclick="sco.switchKeyboard()"><i class="fas fa-keyboard"></i></button></div><div class="rs_show"><button class="config" type="button" title="扩展" onclick="document.querySelector(&quot;.rs_hide&quot;).classList.toggle(&quot;show&quot;)"><i class="fas fa-gear fa-spin"></i></button><button class="mobile toc" type="button" title="目录" onclick="document.querySelector('#card-toc').classList.toggle('open')"><i class="fas fa-list"></i></button><button class="comment" type="button" title="评论" onclick="sco.scrollTo('post-comment')"><i class="fas fa-comment"></i></button><button class="barrage pc" type="button" title="弹" onclick="sco.switchCommentBarrage()"><span>弹</span></button><button class="top" type="button" title="返回顶部" onclick="sco.toTop()"><i class="fas fa-arrow-up"></i><span id="percent">0</span></button></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><div class="back-home-button" tabindex="-1"><i class="solitude fas fa-bars-progress"></i><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">project</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" title="Solitude"><span class="back-menu-item-text">Solitude</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">video</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1GxaVzREGs" title="AIEcho"><span class="back-menu-item-text">AIEcho</span></a></div></div></div></div><a href="/" title="返回博客主页" id="site-name"><span class="title">老汤圆の小窝</span><i class="solitude fas fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">Python 数据类：namedtuple、NamedTuple 与 dataclass</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>文章</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="solitude  fas fa-folder-closed"></i><span>归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="solitude  fas fa-clone"></i><span>分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="solitude  fas fa-tags"></i><span>标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>友链</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/links/"><i class="solitude  fas fa-user-group"></i><span>友情链接</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span>我的</span></a><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="solitude  fas fa-user"></i><span>关于</span></a></li><li><a class="site-page child" href="/music/"><i class="solitude  fas fa-music"></i><span>音乐馆</span></a></li></ul></div></div></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="travellings_button"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html" title=""><i class="solitude fas fa-train"></i></a></div><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机一篇文章" href="javascript:void(0);"><i class="solitude fas fa-dice-d6"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索"><i class="solitude fas fa-magnifying-glass"></i></a></div><div class="nav-button" id="nav-console"><a class="console_switchbutton" onclick="sco.showConsole()" title="中控台" href="javascript:void(0);"><label><i class="left"></i><i class="center"></i><i class="right"></i></label></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fas fa-bars"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/python.jpeg" alt="Python 数据类：namedtuple、NamedTuple 与 dataclass"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="该文章为原创文章，注意版权协议">原创</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/Python/">Python</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>数据类</span></a><a class="post-meta__tags" href="/tags/namedtuple/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>namedtuple</span></a><a class="post-meta__tags" href="/tags/dataclass/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>dataclass</span></a><a class="post-meta__tags" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tags-name tags-punctuation"><i class="solitude fas fa-hashtag"></i>设计模式</span></a></div></div></div></div><h1 class="post-title">Python 数据类：namedtuple、NamedTuple 与 dataclass</h1><div id="post-meta"><div class="meta-secondline"><span class="post-meta-date" title="发布于 2026-05-04 13:43:22"><i class="post-meta-icon solitude fas fa-calendar-days"></i><time datetime="2026-05-04T05:43:22.000Z">2026-05-04T05:43:22.000Z</time></span><span class="post-meta-date" title="最后更新于 2026-05-04 13:47:53"><i class="post-meta-icon solitude fas fa-arrows-rotate"></i><time datetime="2026-05-04T05:47:53.088Z">2026-05-04T05:47:53.088Z</time></span><span class="post-meta-wordcount"><i class="post-meta-icon solitude fas fa-file-word" title="文章字数"></i><span class="word-count">1.1k</span><span class="post-meta-separator"></span><i class="post-meta-icon solitude fas fa-clock" title="阅读耗时"></i><span>3 分钟</span></span><span class="post-meta-position" title="作者IP归属地为China"><i class="post-meta-icon solitude fas fa-location-dot"></i><span>China</span></span><a class="post-meta-pv" href="/2026/05/04/python-dataclass/" title="文章热度"><i class="post-meta-icon solitude fas fa-fire-flame-curved"></i><span id="twikoo_visitors"><i class="solitude fas fa-spinner fa-spin"></i></span></a><span class="post-meta-commentcount" title="评论数" onclick="sco.scrollTo('post-comment')"><i class="solitude fas fa-comment"></i><a href="/2026/05/04/python-dataclass/#post-comment"><span class="twikoo-count"><i class="solitude fas fa-spinner fa-spin"></i></span></a></span></div></div></div><div class="post-radius-bottom"></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content article-container"><h1>Python 数据类</h1>
+<p>Python 中的数据类可通过三种数据类构建器来构建，分别为 <code>collections.namedtuple</code>，<code>typing.NamedTuple</code> 以及 <code>dataclasses.dataclass</code>（前两者还有个名字叫<strong>具名元组</strong>）。</p>
+<p>数据类的一大好处就是已经定义好了一些魔法方法，比如 <code>__str__</code>、<code>__eq__</code> 什么的，正常的类你 <code>print</code> 出来的东西是其内存地址（在 CPython 中），而数据类则是构造函数形式展示的字符串；而且正常类你无法对其进行比较（只能比较 <code>id</code>，和 <code>is</code> 差不多了），而数据类则是值相同的实例就能被 <code>==</code> 判断为 <code>True</code>，这就很方便了。刚好可以作为数据的载体（特别是一些数据类是可哈希的（毕竟是不可变的））。</p>
+<h2 id="collections-namedtuple">collections.namedtuple</h2>
+<p>先说 <code>collection</code> 的，它是 <code>tuple</code> 的子类，无法使用 <code>class</code> 字面量来定义，只能通过 <code>DataClass = namedtuple('DataClass', 'data content')</code> 来创建，然后你就可以通过 <code>data_1 = DataClass(data, text)</code> 来创建一个数据类实例（type 为 <code>tuple</code>，因此它不可变）。不过正因为它无法使用 <code>class</code> 字面量定义，所以使用者应该不多（因为这样不好加方法，当然它也是能通过注入方法来加方法的）。不过有一说一，构造函数其实比 <code>class</code> 字面量更快，毕竟 <code>class</code> 字面量是要进行多行检测的。</p>
+<h2 id="typing-NamedTuple">typing.NamedTuple</h2>
+<p>接下来是 <code>typing</code> 的，这个数据类一个好处就是方便加类型提示（但是每个属性都需要类型提示）。你可以像 <code>collection</code> 的那样直接用构造函数来创建 <code>DataClass = NamedTuple('DataClass', [('data', dict), ('content', str)])</code>，这和上一个没什么区别。你还可以通过另一种方式构建，也就是 <code>class</code> 字面量，这正是它比上一个的优势所在：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dataclass</span>(<span class="title class_ inherited__">NamedTuple</span>):</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure>
+<p>这样的形式你就可以相当方便地添加一些方法了，而且可读性也更高（其中还有默认值相关未介绍，其实默认值没什么好说的，<code>content: str = ''</code> 就能创建默认值了）。当然，你看到 <code>(NamedTuple)</code> 后可能会认为这是继承，这其实是一个误区，<code>DataClass</code> 并不是 <code>NamedTuple</code> 的子类，它还是 <code>tuple</code> 的子类，而 <code>NamedTuple</code> 实际上是一个元类（元类这玩意比较复杂，具体是什么我还没学捏），所以本质上这种行为和继承无任何关系。</p>
+<h2 id="dataclasses-dataclass">dataclasses.dataclass</h2>
+<p>最后是 <code>dataclasses</code> 的了，我感觉这个应该是最合适使用的了，它就不是 <code>tuple</code> 的子类了，它父类是 <code>object</code>，和正常的类一致，这也表示它其实是可变的（当然你也可以让它不可变，但是你还是可以通过一些方法来改变其中的内容）。它无法通过构造函数来构建，而是使用了类装饰器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DataClass</span>:</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure>
+<p>如果你需要不可变的就要给装饰器加上参数 <code>@dataclass(frozen=True)</code>，这样就无法给它构造的类加属性了（但是这种不可变还是比较局限的）。你可以像 <code>content: str = ''</code> 这样来给它加上默认值，但需要注意的是，<code>content: str = ''</code> 创建的为实例属性，而不是类属性；但是如果你是像 <code>content = ''</code> 这样创建的话，它就又成了类属性，这是需要警惕的。如果你想要类型注释和默认值但又要类属性，你就需要 <code>typing.ClassVar</code>，通过 <code>content: ClassVar[str] = ''</code> 创建的就是类属性啦。同时，数据类如果要使用可变的容器（如 <code>dict</code> 和 <code>list</code>）的话，不能直接将它们作为默认值，而是需要使用 <code>dataclasses.field(default_factory=list)</code> 来创建默认值，比如 <code>data: dict = field(default_factory=dict)</code>，这样能防止实例共用属性，直接用 <code>[]</code> 的话会直接报错。</p>
+<p>除此之外，有关数据类其实有个说法，就是，数据类属于一种代码“异味”，正如一句话所说“数据类就像一个小孩子，如果要在一个复杂的系统使用，数据类就得承担一些责任”，这句话所表示的也就是不要把数据类当作一个单纯的数据的载体，有关里面数据的调用都应当由数据类自身的方法实现，而不应该在外部创建一个函数来处理。数据类固然好用，但是也不能滥用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><div class="post-copyright__author_img"><img class="post-copyright__author_img_front" src="/img/avater.jpg"></div><div class="post-copyright__author_name">老汤圆</div><div class="post-copyright__author_desc">老汤圆的博客</div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="social-share"><a class="social-share-ico icon-qq" target="_blank" rel="noopener" href="https://connect.qq.com/widget/shareqq/index.html?url=http%3A%2F%2Fexample.com%2F2026%2F05%2F04%2Fpython-dataclass%2F&amp;title=Python%20%E6%95%B0%E6%8D%AE%E7%B1%BB%EF%BC%9Anamedtuple%E3%80%81NamedTuple%20%E4%B8%8E%20dataclass&amp;desc=undefined&amp;summary=undefined&amp;site=Python%20%E6%95%B0%E6%8D%AE%E7%B1%BB%EF%BC%9Anamedtuple%E3%80%81NamedTuple%20%E4%B8%8E%20dataclass&amp;pics=%2Fimg%2Fpython.jpeg" title="分享到QQ"><i class="solitude fab fa-qq"></i></a><a class="social-share-ico icon-weibo" target="_blank" rel="noopener" href="http://service.weibo.com/share/share.php?url=http%3A%2F%2Fexample.com%2F2026%2F05%2F04%2Fpython-dataclass%2F&amp;title=Python%20%E6%95%B0%E6%8D%AE%E7%B1%BB%EF%BC%9Anamedtuple%E3%80%81NamedTuple%20%E4%B8%8E%20dataclass&amp;pic=%2Fimg%2Fpython.jpeg" title="分享到微博"><i class="solitude fab fa-weibo"></i></a><a class="social-share-ico icon-twitter" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=http%3A%2F%2Fexample.com%2F2026%2F05%2F04%2Fpython-dataclass%2F&amp;text=Python%20%E6%95%B0%E6%8D%AE%E7%B1%BB%EF%BC%9Anamedtuple%E3%80%81NamedTuple%20%E4%B8%8E%20dataclass" title="分享到Twitter"><i class="solitude fab fa-twitter"></i></a><a class="social-share-ico icon-telegram" target="_blank" rel="noopener" href="https://t.me/share/url?url=http%3A%2F%2Fexample.com%2F2026%2F05%2F04%2Fpython-dataclass%2F&amp;text=Python%20%E6%95%B0%E6%8D%AE%E7%B1%BB%EF%BC%9Anamedtuple%E3%80%81NamedTuple%20%E4%B8%8E%20dataclass" title="分享到Telegram"><i class="solitude fab fa-telegram"></i></a></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">老汤圆の小窝</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>数据类<span class="tagsPageCount">1</span></span></a><a class="post-meta__tags" href="/tags/namedtuple/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>namedtuple<span class="tagsPageCount">1</span></span></a><a class="post-meta__tags" href="/tags/dataclass/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>dataclass<span class="tagsPageCount">1</span></span></a><a class="post-meta__tags" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"><span class="tags-punctuation"><i class="solitude fas fa-hashtag"></i>设计模式<span class="tagsPageCount">1</span></span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/05/04/python-unicode/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Python中的Unicode处理</div></div></a></div></nav><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="solitude fas fa-comment"></i><span> 评论</span><span class="count"> (<span class="twikoo-count"><i class="solitude fas fa-spinner fa-spin"></i></span><span class="giscus-count"></span>)</span></div><div class="comment-switch"><span class="first">Twikoo</span><span id="switch-btn"></span><span class="second">Giscus</span></div></div><div class="comment-wrap"><div id="twikoo-wrap"></div><div id="giscus-wrap"></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="top-group"><div class="sayhi" id="sayhi" onclick="sco.changeWittyWord()"></div></div></div><div class="avatar"><img alt="头像" src="/img/avater.jpg"><div class="sticker"><img class="sticker-img" src="/img/sticker.png" alt="心情贴纸"></div></div><div class="description">我的个人博客，<br >专注学习分享与生活记录。</div><div class="bottom-group"><span class="left"><div class="name">老汤圆</div><div class="desc">满脑子的创意和想法<br >可能没什么用<br >但绝对够酷😎</div></span><div class="social-icons is-center"><a class="social-icon" target="_blank" rel="noopener" href="https://github.com/OldTangyuan" title="Github"><i class="solitude  fab fa-github"></i></a><a class="social-icon" target="_blank" rel="noopener" href="https://space.bilibili.com/2057548549" title="Bilibili"><i class="solitude  fab fa-bilibili"></i></a></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fas fa-bars"></i><span>文章目录</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-text">Python 数据类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#collections-namedtuple"><span class="toc-text">collections.namedtuple</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typing-NamedTuple"><span class="toc-text">typing.NamedTuple</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dataclasses-dataclass"><span class="toc-text">dataclasses.dataclass</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fas fa-map"></i><span>最近发布</span></div><div class="aside-list"><a class="aside-list-item" href="/2026/05/04/python-dataclass/" title="Python 数据类：namedtuple、NamedTuple 与 dataclass"><div class="thumbnail"><img alt="Python 数据类：namedtuple、NamedTuple 与 dataclass" src="/img/python.jpeg"></div><div class="content"><span class="title" href="/2026/05/04/python-dataclass/" title="Python 数据类：namedtuple、NamedTuple 与 dataclass">Python 数据类：namedtuple、NamedTuple 与 dataclass</span><span class="categories" href="/2026/05/04/python-dataclass/">Python</span></div></a><a class="aside-list-item" href="/2026/05/04/python-unicode/" title="Python中的Unicode处理"><div class="thumbnail"><img alt="Python中的Unicode处理" src="/img/python.jpeg"></div><div class="content"><span class="title" href="/2026/05/04/python-unicode/" title="Python中的Unicode处理">Python中的Unicode处理</span><span class="categories" href="/2026/05/04/python-unicode/">后端</span></div></a><a class="aside-list-item" href="/2026/05/04/python-match-case/" title="Python 3.10 模式匹配 match-case"><div class="thumbnail"><img alt="Python 3.10 模式匹配 match-case" src="/img/python.jpeg"></div><div class="content"><span class="title" href="/2026/05/04/python-match-case/" title="Python 3.10 模式匹配 match-case">Python 3.10 模式匹配 match-case</span><span class="categories" href="/2026/05/04/python-match-case/">Python</span></div></a><a class="aside-list-item" href="/2026/05/03/python-dict/" title="Python 字典与集合的有趣事实"><div class="thumbnail"><img alt="Python 字典与集合的有趣事实" src="/img/python.jpeg"></div><div class="content"><span class="title" href="/2026/05/03/python-dict/" title="Python 字典与集合的有趣事实">Python 字典与集合的有趣事实</span><span class="categories" href="/2026/05/03/python-dict/">Python</span></div></a><a class="aside-list-item" href="/2026/05/03/python-tips/" title="Python 小知识：字典、队列与排序"><div class="thumbnail"><img alt="Python 小知识：字典、队列与排序" src="/img/python.jpeg"></div><div class="content"><span class="title" href="/2026/05/03/python-tips/" title="Python 小知识：字典、队列与排序">Python 小知识：字典、队列与排序</span><span class="categories" href="/2026/05/03/python-tips/">Python</span></div></a></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>老汤圆の小窝</span></div><div class="footer-bar-description"></div><div><a class="footer-bar-link" href="/about/"></a></div></div><div id="footer_deal"><a class="deal_link" target="_blank" rel="noopener" href="https://github.com/OldTangyuan" title="Github"><i class="solitude  fab fa-github"></i></a><a class="deal_link" href="mailto:3521466632@qq.com" title="Mail"><i class="solitude  far fa-envelope"></i></a><div><div class="nolazyload footer_mini_logo" id="footer_mini_logo" title="返回顶部" onclick="sco.toTop()"><img src= "/img/default.avif" data-lazy-src="/img/avater.jpg" alt="返回顶部"></div></div><a class="deal_link" target="_blank" rel="noopener" href="https://space.bilibili.com/2057548549" title="Bilibili"><i class="solitude  fab fa-bilibili"></i></a><a class="deal_link" target="_blank" rel="noopener" href="https://wpa.qq.com/msgrd?v=3&amp;uin=3521466632" title="QQ"><i class="solitude  fab fa-qq"></i></a></div><div><div id="st-footer"><div class="footer-group"><h3 class="footer-title">导航</h3><div class="footer-links"><a class="footer-item" href="/archives/" title="Archives">Archives</a><a class="footer-item" href="/categories/" title="Categories">Categories</a><a class="footer-item" href="/tags/" title="Tags">Tags</a></div></div><div class="footer-group"><h3 class="footer-title">排列</h3><div class="footer-links"><a class="footer-item" href="/privacy/" title="Privacy">Privacy</a></div></div><div class="footer-group"><div class="footer-title-group"><h3 class="footer-title">友链</h3><button class="random-friends-btn" onclick="randomLinksList()" title="友链"><i class="solitude fas fa-arrows-rotate"></i></button></div><div class="footer-links" id="friend-links-in-footer"></div></div></div></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2026 By<a class="footer-bar-link" href="/" title="老汤圆">老汤圆</a></div><div class="beian-group"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://hexo.io/" title="框架：Hexo">框架：Hexo</a><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" title="主题：Solitude">主题：Solitude</a></div></div><div><div class="footer-bar-right"><a class="footer-bar-link" href="/atom.xml" title="">RSS</a><a class="footer-bar-link" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" title=""><i class="solitude fab fa-creative-commons-by"></i><i class="solitude fab fa-creative-commons-nc"></i></a><a class="footer-bar-link" href="/about/" title="">关于</a></div></div></div></div><div><div class="comment-barrage needEndHide"></div></div></footer></div><div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="solitude fas fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="solitude fas fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="solitude fas fa-arrows-rotate"></i></div><div class="rightMenu-item" id="menu-top"><i class="solitude fas fa-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="solitude fas fa-clone"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="solitude fas fa-clipboard"></i><span>粘贴文本</span></div><div class="rightMenu-item" id="menu-commenttext"><i class="solitude fas fa-comment-medical"></i><span>引用到评论</span></div><div class="rightMenu-item" id="menu-newwindow"><i class="solitude far fa-window-maximize"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="solitude fas fa-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="solitude fas fa-clone"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="solitude fas fa-cloud-arrow-down"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-search"><i class="solitude fas fa-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="solitude fas fa-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="solitude fas fa-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="solitude fas fa-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="solitude fas fa-clone"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><div class="rightMenu-item" id="menu-randomPost" onclick="toRandomPost()||rm.hideRightMenu()"><i class="solitude fas fa-tower-broadcast"></i><span>随机文章</span></div><div class="rightMenu-item" onclick="pjax.loadUrl('/categories/')||rm.hideRightMenu()"><i class="solitude fas fa-clone"></i><span>全部分类</span></div><div class="rightMenu-item" onclick="pjax.loadUrl('/tags/')||rm.hideRightMenu()"><i class="solitude fas fa-tags"></i><span>全部标签</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><div class="rightMenu-item" id="menu-commentBarrage" onclick="sco.switchCommentBarrage()"><i class="solitude fas fa-comment"></i><span class="menu-commentBarrage-text">关闭热评</span></div><div class="rightMenu-item" id="menu-darkmode" onclick="sco.switchDarkMode()"><i class="solitude fas fa-circle-half-stroke"></i><span class="menu-darkmode-text">浅色模式</span></div><div class="rightMenu-item" id="menu-translate"><i class="solitude fas fa-language"></i><span>轉為繁體</span></div></div></div><div id="rightmenu-mask"></div></div><div><!-- Critical scripts loaded synchronously--><script src="/js/utils.js?v=3.0.21"></script><script src="/js/main.js?v=3.0.21"></script><!-- Non-critical scripts loaded asynchronously--><script async src="/js/third_party/waterfall.min.js?v=3.0.21"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><!-- Feature-specific scripts loaded asynchronously--><script defer src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/typeit@8.8.7/dist/index.umd.min.js"></script><script defer src="/js/third_party/universe.min.js?v=3.0.21"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  if (typeof dark === 'function') dark();
+});
+</script><script defer src="/js/tw_cn.js?v=3.0.21"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/copy-tex.min.js"><script>(() => {
+  document.querySelectorAll('.article-container span.katex-display').forEach(item => {
+    utils.wrap(item, 'div', {class: 'katex-wrap'})
+  })
+})();
+</script></script><!-- UI enhancement scripts--><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/swiper@11.0.5/swiper-bundle.min.js"></script><!-- Music player scripts--><script>var meting_api = 'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&auth=:auth&r=:r';</script><script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><!-- Cover color processing scripts--><script defer src="https://cdn.jsdelivr.net/npm/colorthief@2.6.0/dist/color-thief.min.js"></script><script defer src="/js/covercolor/local.js?v=3.0.21"></script><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+utils.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+</script><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!-- Search functionality--><!-- Right menu functionality--><script defer src="/js/right_menu.js?v=3.0.21"></script><script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({id:"3PmwibrunWYnb40i",ck:"3PmwibrunWYnb40i"})</script>
+<div class="js-pjax"><script>(() => {
+    const getCount = () => {
+        const ele = document.querySelectorAll('.twikoo-count')
+        if (!ele) return
+        twikoo.getCommentsCount({
+            envId: 'https://twikoo-blogs-comment.netlify.app/.netlify/functions/twikoo',
+            region: '',
+            urls: [window.location.pathname],
+            includeReply: false
+        }).then(res => {
+            ele.forEach(item => item.textContent = res[0].count)
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+    const init = () => {
+        twikoo.init(Object.assign({
+            el: '#twikoo-wrap',
+            envId: 'https://twikoo-blogs-comment.netlify.app/.netlify/functions/twikoo',
+            region: '',
+            path: window.location.pathname,
+            onCommentLoaded: () => {
+                GLOBAL_CONFIG.lightbox && utils.lightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+            }
+        }, null))
+
+         && getCount()
+        sco.owoBig({
+            body: '.OwO-body',
+            item: '.OwO-items li'
+        })
+
+        true && barrageTwikoo()
+    }
+
+    const loadTwikoo = () => {
+        if (typeof twikoo === 'object') setTimeout(init,0)
+        else utils.getScript('https://cdn.jsdelivr.net/npm/twikoo@1.6.41/dist/twikoo.all.min.js').then(init)
+    }
+
+    if ('Twikoo' === 'Twikoo' || true) {
+        if (true) utils.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+        else loadTwikoo()
+    } else {
+        window.loadTwoComment = loadTwikoo
+    }
+})()
+</script><script>async function barrageTwikoo() {
+    await fetch("https://twikoo-blogs-comment.netlify.app/.netlify/functions/twikoo", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            event: "COMMENT_GET",
+            accessToken: "",
+            url: window.location.pathname
+        })
+    }).then(async res => {
+        if (!res.ok) throw new Error("HTTP error! status: " + res.status)
+        const data = await res.json();
+        const init = () => {
+            initializeCommentBarrage((data.data).map(item => Object.assign({
+                content: item.comment,
+                nick: item.nick,
+                mailMd5: item.mailMd5,
+                id: item.id
+            })))
+        }
+        if (typeof initializeCommentBarrage === "undefined") await utils.getScript('/js/third_party/barrage.min.js?v=3.0.21').then(init)
+        else init()
+    }).catch(error => console.error("An error occurred while fetching comments: ", error))
+}</script><script>(()=>{
+    const getGiscusTheme = theme => {
+        return theme === 'dark' ? 'dark' : 'light'
+    }
+
+    const loadGiscus = () => {
+        const config = Object.assign({
+            src: 'https://giscus.app/client.js',
+            'data-repo': 'OldTangyuan/messageBoard-giscus',
+            'data-repo-id': 'R_kgDOSSWXqA',
+            'data-category-id': 'DIC_kwDOSSWXqM4C8LaW',
+            'data-mapping': 'pathname',
+            'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+            'data-reactions-enabled': '1',
+            crossorigin: 'anonymous',
+            async: true
+        },null)
+
+        const ele = document.createElement('script')
+        for (let key in config) {
+            ele.setAttribute(key, config[key])
+        }
+        document.getElementById('giscus-wrap').appendChild(ele)
+    }
+
+    const changeGiscusTheme = theme => {
+        const sendMessage = message => {
+            const iframe = document.querySelector('iframe.giscus-frame')
+            if (!iframe) return
+            iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+        }
+
+        sendMessage({
+            setConfig: {
+                theme: getGiscusTheme(theme)
+            }
+        });
+    }
+
+    utils.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+    if ('Twikoo' === 'Giscus' || !true) {
+        if (true) {
+            const giscusWrap = document.getElementById('giscus-wrap')
+            if (giscusWrap) {
+                utils.loadComment(giscusWrap, loadGiscus)
+            }
+        } else {
+            loadGiscus()
+        }
+    } else {
+        window.loadTwoComment = loadGiscus
+    }
+})()</script><script>mermaid.run();
+</script><script defer pjax src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.min.js"></script></div></div><script>const links = [{"name":"Hexo","link":"https://hexo.io/zh-cn/"},{"name":"Solitude","link":"https://solitude.js.org/"},{"name":"my-neuro","link":"https://github.com/morettt/my-neuro"},{"name":"KiraAI","link":"https://github.com/xxynet/KiraAI"},{"name":"KiraAI-DeskTop","link":"https://github.com/luochenYukitsune/KiraAI-DeskTop"},{"name":"XXYの博客","link":"https://blog.xuxiny.top"}]
+const randomText = '点击前往按钮进入随机一个友链，不保证跳转网站的安全性和可用性。本次随机到的是本站友链：⌈ ${name} ⌋'
+function travelling() {
+    const link = links[utils.randomNum(links.length)];
+    Snackbar.show({
+        text: randomText.replace(/\$\{name}/,link.name),
+        duration: 8000,
+        pos: 'top-center',
+        actionText: '前往',
+        onActionClick: function(element) {
+            element.style.opacity = 0;
+            window.open(link.link, '_blank');
+        }
+    });
+}
+</script><script>function randomLinksList() {
+    const linkcard = document.getElementById('friend-links-in-footer');
+    if (linkcard == null) return;
+
+    let data = '';
+    let linksCopy = [...links];
+    let count = Math.min(3, linksCopy.length);
+
+    for (let i = 0; i < count; i++) {
+        let index = utils.randomNum(linksCopy.length);
+        const {link, name} = linksCopy[index];
+        data += `<a class="footer-item" href="${link}" target="_blank" rel="noopener noreferrer nofollow">${name}</a>`;
+        linksCopy.splice(index, 1);
+    }
+
+    linkcard.innerHTML = data + '<a class="footer-item" href="/links/">更多</a>';
+}</script><!-- pjax--><script>let pjax = null;
+
+function initPjax() {
+    if (typeof Pjax === 'undefined') {
+        console.warn('Pjax is not loaded yet, retrying...');
+        setTimeout(initPjax, 100);
+        return;
+    }
+
+    pjax = new Pjax({
+        elements: 'a:not([target="_blank"])',
+        selectors: ["title","#body-wrap","#site-config","meta[name=\"description\"]",".js-pjax","meta[property^=\"og:\"]","#config-diff",".rs_show",".rs_hide"],
+        cacheBust: false,
+        analytics: false,
+        scrollRestoration: false
+    })
+
+    // 将 pjax 实例挂载到全局
+    window.pjax = pjax;
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    document.addEventListener('pjax:complete', () => {
+        window.refreshFn()
+
+        document.querySelectorAll('script[data-pjax]').forEach(item => {
+            const newScript = document.createElement('script')
+            const content = item.text || item.textContent || item.innerHTML || ""
+            Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+            newScript.appendChild(document.createTextNode(content))
+            item.parentNode.replaceChild(newScript, item)
+        })
+
+        GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+    })
+
+    document.addEventListener('pjax:error', (e) => {
+        if (e.request.status === 404) {
+            pjax.loadUrl('/404.html')
+        }
+    })
+}
+
+// 初始化 Pjax
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPjax);
+} else {
+    initPjax();
+}</script><!-- google adsense--><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><button class="search-close-button"><i class="solitude fas fa-xmark"></i></button></nav><div class="search-wrap"><div class="search-box"><input class="search-box-input" id="search-input" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="输入关键词快速查找"></div><div id="search-results"><div id="search-hits"><a class="tag-list" href="javascript:void(0);" onclick="pjax.loadUrl('/tags/%E5%89%8D%E7%AB%AF/')">前端</a><a class="tag-list" href="javascript:void(0);" onclick="pjax.loadUrl('/tags/%E8%AE%BE%E8%AE%A1/')">设计</a><a class="tag-list" href="javascript:void(0);" onclick="pjax.loadUrl('/tags/%E7%94%9F%E6%B4%BB/')">生活</a></div></div><div id="search-pagination"></div><div id="search-tips"></div></div></div><div id="search-mask"></div></div><script src="/js/search/local.js?v=3.0.21"></script><div><div class="needEndHide" id="nav-music"><div id="nav-music-hoverTips"><i class="music-control-btn fas fa-backward-step" id="music-prev" onclick="sco.musicSkipBack()"></i><i class="music-control-btn fas fa-pause" id="music-pause" onclick="sco.musicToggle()"></i><i class="music-control-btn fas fa-play" id="music-play" onclick="sco.musicToggle()"></i><i class="music-control-btn fas fa-forward-step" id="music-next" onclick="sco.musicSkipForward()"></i></div><meting-js id="13107637347" server="netease" type="playlist" mutex="true" preload="none" theme="var(--efu-main)" data-lrctype="0" order="random" volume="0.6"></meting-js></div></div></body></html>
+        <script>
+            const posts = ["2026/05/04/python-dataclass/","2026/05/04/python-unicode/","2026/05/04/python-match-case/","2026/05/03/python-dict/","2026/05/03/python-tips/","2026/05/03/python-slice/","2026/05/03/build-hexo/","2026/05/02/first_post/"];
+            function toRandomPost() {
+                const randomPost = posts[Math.floor(Math.random() * posts.length)];
+                pjax.loadUrl(GLOBAL_CONFIG.root + randomPost);
+            }
+        </script>

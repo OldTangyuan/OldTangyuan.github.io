@@ -4,6 +4,99 @@
   
     
     <entry>
+      <title>Python 数据类：namedtuple、NamedTuple 与 dataclass</title>
+      <link href="/2026/05/04/python-dataclass/"/>
+      <url>/2026/05/04/python-dataclass/</url>
+      
+        <content type="html"><![CDATA[<h1>Python 数据类</h1><p>Python 中的数据类可通过三种数据类构建器来构建，分别为 <code>collections.namedtuple</code>，<code>typing.NamedTuple</code> 以及 <code>dataclasses.dataclass</code>（前两者还有个名字叫<strong>具名元组</strong>）。</p><p>数据类的一大好处就是已经定义好了一些魔法方法，比如 <code>__str__</code>、<code>__eq__</code> 什么的，正常的类你 <code>print</code> 出来的东西是其内存地址（在 CPython 中），而数据类则是构造函数形式展示的字符串；而且正常类你无法对其进行比较（只能比较 <code>id</code>，和 <code>is</code> 差不多了），而数据类则是值相同的实例就能被 <code>==</code> 判断为 <code>True</code>，这就很方便了。刚好可以作为数据的载体（特别是一些数据类是可哈希的（毕竟是不可变的））。</p><h2 id="collections-namedtuple">collections.namedtuple</h2><p>先说 <code>collection</code> 的，它是 <code>tuple</code> 的子类，无法使用 <code>class</code> 字面量来定义，只能通过 <code>DataClass = namedtuple('DataClass', 'data content')</code> 来创建，然后你就可以通过 <code>data_1 = DataClass(data, text)</code> 来创建一个数据类实例（type 为 <code>tuple</code>，因此它不可变）。不过正因为它无法使用 <code>class</code> 字面量定义，所以使用者应该不多（因为这样不好加方法，当然它也是能通过注入方法来加方法的）。不过有一说一，构造函数其实比 <code>class</code> 字面量更快，毕竟 <code>class</code> 字面量是要进行多行检测的。</p><h2 id="typing-NamedTuple">typing.NamedTuple</h2><p>接下来是 <code>typing</code> 的，这个数据类一个好处就是方便加类型提示（但是每个属性都需要类型提示）。你可以像 <code>collection</code> 的那样直接用构造函数来创建 <code>DataClass = NamedTuple('DataClass', [('data', dict), ('content', str)])</code>，这和上一个没什么区别。你还可以通过另一种方式构建，也就是 <code>class</code> 字面量，这正是它比上一个的优势所在：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dataclass</span>(<span class="title class_ inherited__">NamedTuple</span>):</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure><p>这样的形式你就可以相当方便地添加一些方法了，而且可读性也更高（其中还有默认值相关未介绍，其实默认值没什么好说的，<code>content: str = ''</code> 就能创建默认值了）。当然，你看到 <code>(NamedTuple)</code> 后可能会认为这是继承，这其实是一个误区，<code>DataClass</code> 并不是 <code>NamedTuple</code> 的子类，它还是 <code>tuple</code> 的子类，而 <code>NamedTuple</code> 实际上是一个元类（元类这玩意比较复杂，具体是什么我还没学捏），所以本质上这种行为和继承无任何关系。</p><h2 id="dataclasses-dataclass">dataclasses.dataclass</h2><p>最后是 <code>dataclasses</code> 的了，我感觉这个应该是最合适使用的了，它就不是 <code>tuple</code> 的子类了，它父类是 <code>object</code>，和正常的类一致，这也表示它其实是可变的（当然你也可以让它不可变，但是你还是可以通过一些方法来改变其中的内容）。它无法通过构造函数来构建，而是使用了类装饰器：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DataClass</span>:</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure><p>如果你需要不可变的就要给装饰器加上参数 <code>@dataclass(frozen=True)</code>，这样就无法给它构造的类加属性了（但是这种不可变还是比较局限的）。你可以像 <code>content: str = ''</code> 这样来给它加上默认值，但需要注意的是，<code>content: str = ''</code> 创建的为实例属性，而不是类属性；但是如果你是像 <code>content = ''</code> 这样创建的话，它就又成了类属性，这是需要警惕的。如果你想要类型注释和默认值但又要类属性，你就需要 <code>typing.ClassVar</code>，通过 <code>content: ClassVar[str] = ''</code> 创建的就是类属性啦。同时，数据类如果要使用可变的容器（如 <code>dict</code> 和 <code>list</code>）的话，不能直接将它们作为默认值，而是需要使用 <code>dataclasses.field(default_factory=list)</code> 来创建默认值，比如 <code>data: dict = field(default_factory=dict)</code>，这样能防止实例共用属性，直接用 <code>[]</code> 的话会直接报错。</p><p>除此之外，有关数据类其实有个说法，就是，数据类属于一种代码“异味”，正如一句话所说“数据类就像一个小孩子，如果要在一个复杂的系统使用，数据类就得承担一些责任”，这句话所表示的也就是不要把数据类当作一个单纯的数据的载体，有关里面数据的调用都应当由数据类自身的方法实现，而不应该在外部创建一个函数来处理。数据类固然好用，但是也不能滥用。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Python </category>
+          
+          <category> 后端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据类 </tag>
+            
+            <tag> namedtuple </tag>
+            
+            <tag> dataclass </tag>
+            
+            <tag> 设计模式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python中的Unicode处理</title>
+      <link href="/2026/05/04/python-unicode/"/>
+      <url>/2026/05/04/python-unicode/</url>
+      
+        <content type="html"><![CDATA[<p>其实我感觉这方面的知识用得不会很多，所以大概是介绍不了太多文字了（</p><h2 id="Python-2-与-Python-3-的字符串差异">Python 2 与 Python 3 的字符串差异</h2><p>首先是 Python 3 的 <code>str</code>，它其实就是 Python 2 的 <code>unicode</code> 类（我记得是完全一样的），而 Python 2 的 <code>str</code> 则和 Python 3 的 <code>bytes</code> 类似（不完全一样）。所以 Python 3 对字符的支持可能更多、更好。不过鉴于 Python 3 的内部灵活表示机制（PEP 393），也可能存在一些需要注意的细节，比如纯 ASCII 字符串内部使用 1 字节存储，一旦出现更大的码点字符，整个字符串的内部存储单元会相应扩大。</p><h2 id="Unicode-码点组合与规格化">Unicode 码点组合与规格化</h2><p>关于 Unicode，其实有很多字符是可以通过码点组合而来的，虽然显示都一样，但是 Python 解释器可不吃你这套，使用 <code>==</code> 照样为 <code>False</code>。但这就有一个问题了：如果要实现对字符的搜索，这样难道不会搜索不到吗？</p><p>所以，我们有了<strong>规格化操作</strong>，有 4 种方式，分别为：</p><ul><li><strong>NFC</strong>：将可以合并的码点合并</li><li><strong>NFD</strong>：将能拆分的码点拆分</li><li><strong>NFKC</strong>：兼容性合并</li><li><strong>NFKD</strong>：兼容性拆分</li></ul><p>它们都能起到一个不错的规格化作用（其实 NFC 最常用），但是还是不够适合搜索。于是我们有了 NFKC 和 NFKD（不过可能只适合搜索就是了，因为会改变一些原字符含义），它们会将一些字符拆分，比如 <code>½</code> 会被拆分为 <code>1/2</code>，<code>4⁵</code>（4 和上标 5）会被拆分为普通字符 <code>45</code>（这种已经完全改变原义了），但是这样很方便用户搜索。</p><h2 id="Unicode-三明治原则">Unicode 三明治原则</h2><p>接下来是 Unicode 的一个重要处理原则：<strong>Unicode 三明治原则</strong>。</p><p>这个原则应该能解决很多 Unicode 相关的问题，它的要求是：</p><ul><li>在接收字符时解码（<code>bytes</code> → <code>str</code>）</li><li>中间程序对字符的操作都是 100% 的 <code>str</code></li><li>发送字符时再编码（<code>str</code> → <code>bytes</code>）</li></ul><p>这是一个相当合理的操作，能有效减少一些出问题的可能性。<code>open()</code> 函数就遵循了这样的原则，它会在读取文件时获取 <code>bytes</code> 内容再解码为指定编码内容，写入时则是将需要写入的 <code>str</code> 转为 <code>bytes</code> 再写入。</p><h2 id="N-转义字符"><code>\N{}</code> 转义字符</h2><p>Python 还支持一种与 Unicode 相关的特殊转义字符 <code>\N{}</code>，它会将 <code>{}</code> 内的 Unicode 名字变为对应的 Unicode 字符，有些时候可能挺方便的。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\N&#123;GREEK SMALL LETTER ALPHA&#125;&quot;</span>)  <span class="comment"># 输出: α</span></span><br></pre></td></tr></table></figure><h2 id="BOM（字节顺序标记）">BOM（字节顺序标记）</h2><p>还有一些编码的文件，你去看它的 <code>bytes</code> 会发现其中有些原本&quot;不存在&quot;的字符，其中 <strong>BOM</strong> 就是一个很有用的标记。它代表文件所使用的编码是哪个，比如 UTF-16（带 BOM）就有 BOM 来区分 UTF-16LE 和 UTF-16BE，这样 BOM 就很重要了。不过也有不带 BOM 的一些编码格式（带上 BOM 其实也没区别），比如 UTF-8。但是鉴于一些文档软件会自动给编码生成 BOM，所以解码时建议使用 <code>utf-8-sig</code>，有没有 BOM 它都能正常解码。</p><blockquote><p><strong>注意</strong>：千万不要给 Python 代码文件的 UTF-8 加上 BOM，这会导致一些潜在的问题。</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 后端 </category>
+          
+          <category> Python </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> Unicode </tag>
+            
+            <tag> 编码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python 3.10 模式匹配 match-case</title>
+      <link href="/2026/05/04/python-match-case/"/>
+      <url>/2026/05/04/python-match-case/</url>
+      
+        <content type="html"><![CDATA[<p>Python 3.10 更新了模式匹配，也就是 match-case。这并不是简简单单的对 C 语言 switch-case 的模仿，事实上 switch-case 是完全可以由 if-elif-elif… 代替的，而 match-case 最大的提升就是支持了解构——一种高级拆包形式，同时，这也是解构第一次在 Python 世界中出现。</p><h2 id="解构与卫语句">解构与卫语句</h2><p>模式匹配还支持卫语句，也就是在模式语句之后的 if 语句，模式匹配要同时满足模式语句以及卫语句（可选）才能成功匹配，不然就会转到下一个 case。</p><h2 id="通配符与类型检查">通配符与类型检查</h2><p><code>_</code> 在模式匹配上下文中有特殊含义，它可以匹配任何模式，也就是说，你可以使用 <code>case _</code> 来作为 if 语句的 else 使用。除此之外，模式匹配上下文中 <code>str()</code>，<code>float()</code> 等并不是构造函数，而是作为类型检查，也就是说 <code>case [str(text)]</code> 表示匹配只含 1 项的序列（这也叫做序列匹配），且那一项必须为 str。</p><h2 id="序列匹配的限制">序列匹配的限制</h2><p>必须说明的是，序列匹配只能匹配序列（str，bytes 以及迭代器都不支持解构，其中 str 和 bytes 是因为它们属于“原子”值，也就是一个整体），像列表、元组、range 以及数组等都是可以正常解构的。</p><h2 id="基本语法示例">基本语法示例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">metro_areas = [</span><br><span class="line">    (<span class="string">&#x27;Tokyo&#x27;</span>, <span class="string">&#x27;JP&#x27;</span>, <span class="number">36.933</span>, (<span class="number">11.11</span>, <span class="number">55.55</span>)),</span><br><span class="line">    (<span class="string">&#x27;Shanghai&#x27;</span>, <span class="string">&#x27;CN&#x27;</span>, <span class="number">24.9</span>, (<span class="number">31.1</span>, <span class="number">121.3</span>))</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> record <span class="keyword">in</span> metro_areas:</span><br><span class="line">    <span class="keyword">match</span> record:</span><br><span class="line">        <span class="keyword">case</span> [<span class="built_in">str</span>(name), _, _, (<span class="built_in">float</span>(lat), <span class="built_in">float</span>(lon))] <span class="keyword">if</span> lon &lt;= <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;name:<span class="number">15</span>&#125;</span> | <span class="subst">&#123;lat:<span class="number">9.4</span>f&#125;</span> | <span class="subst">&#123;lon:<span class="number">9.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure><p>当然，匹配中也可以将 <code>str(name)</code> 改为确定的字符串如 <code>'Shanghai'</code>，这样就只会匹配 <code>'Shanghai'</code> 一个了。</p><h2 id="评价">评价</h2><p>模式匹配在某些情况下其实挺好用的，if 语句是比不了的，事实上它对 if 语句还能进一步简化。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Python </category>
+          
+          <category> 后端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> match-case </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Python 字典与集合的有趣事实</title>
       <link href="/2026/05/03/python-dict/"/>
       <url>/2026/05/03/python-dict/</url>
@@ -14,6 +107,8 @@
       <categories>
           
           <category> Python </category>
+          
+          <category> 后端 </category>
           
       </categories>
       
@@ -46,6 +141,8 @@
           
           <category> Python </category>
           
+          <category> 后端 </category>
+          
       </categories>
       
       
@@ -75,6 +172,8 @@
           
           <category> Python </category>
           
+          <category> 后端 </category>
+          
       </categories>
       
       
@@ -103,6 +202,8 @@
       <categories>
           
           <category> 前端 </category>
+          
+          <category> Hexo </category>
           
       </categories>
       
