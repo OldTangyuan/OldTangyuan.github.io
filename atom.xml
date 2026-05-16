@@ -4,9 +4,9 @@
     <name>老汤圆</name>
   </author>
   <generator uri="https://hexo.io/">Hexo</generator>
-  <id>https://oldtangyuan.netlify.app/</id>
-  <link href="https://oldtangyuan.netlify.app/" rel="alternate"/>
-  <link href="https://oldtangyuan.netlify.app/atom.xml" rel="self"/>
+  <id>https://blog.oldtangyuan.top/</id>
+  <link href="https://blog.oldtangyuan.top/" rel="alternate"/>
+  <link href="https://blog.oldtangyuan.top/atom.xml" rel="self"/>
   <rights>All rights reserved 2026, 老汤圆</rights>
   <subtitle>老汤圆的博客</subtitle>
   <title>老汤圆の小窝</title>
@@ -15,17 +15,17 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/%E5%90%8E%E7%AB%AF/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/%E5%90%8E%E7%AB%AF/Python/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/tags/Python/"/>
-    <category term="内存管理" scheme="https://oldtangyuan.netlify.app/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"/>
-    <category term="Python特性" scheme="https://oldtangyuan.netlify.app/tags/Python%E7%89%B9%E6%80%A7/"/>
-    <category term="Python小知识" scheme="https://oldtangyuan.netlify.app/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/%E5%90%8E%E7%AB%AF/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/%E5%90%8E%E7%AB%AF/Python/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/tags/Python/"/>
+    <category term="内存管理" scheme="https://blog.oldtangyuan.top/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"/>
+    <category term="Python特性" scheme="https://blog.oldtangyuan.top/tags/Python%E7%89%B9%E6%80%A7/"/>
+    <category term="Python小知识" scheme="https://blog.oldtangyuan.top/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
     <content>
       <![CDATA[<p>一般人们解释变量时，都会把变量比作盒子。但对于像 Python 这样的引用式变量就不能这样理解了，更合理的解释应当是变量是便利贴。赋值语句就相当于贴便利贴。因此，<code>b = a</code> 应当理解为在标注为 <code>a</code> 的对象上再贴一个标志 <code>b</code>。也因此，对于引用式变量，赋值的准确描述应该是把变量分配给对象。同时按照 Python 是先执行表达式右边的内容也可以很好理解，对象是先创建再赋值的。</p><h2 id="标识、相等性与别名">标识、相等性与别名</h2><p>当两个不同的变量指向同一个对象时，这两个变量就互为对方的别名，同时你可以用 <code>is</code> 运算符和 <code>id</code> 函数来确定这一点。但如果两个不同的变量绑定的是具有相同内容的不同对象时，这两个变量就只具有相等性了，<code>==</code> 运算符会返回 <code>True</code>，<code>is</code> 则会返回 <code>False</code>。（在 CPython 中，<code>id</code> 函数返回的是对象的内存地址，其他类型的 Python 则可能不是）</p><p>而在面对 <code>==</code> 和 <code>is</code> 时，我们应该如何选择呢？一般来说，<code>==</code> 比较的是两个对象的值，<code>is</code> 则是比较两个对象的标识，所以一般我们都用 <code>==</code> 更多。但当比较一个变量和一个单例时，<code>is</code> 更合适，比如 <code>x is None</code> 这样的比较。毕竟 <code>is</code> 比 <code>==</code> 速度更快，因为它不能重载。（<code>a == b</code> 其实是语法糖，等同于 <code>a.__eq__(b)</code>。）</p><h2 id="元组的相对不可变性">元组的相对不可变性</h2><p>对于元组，大家的第一个印象应该就是不可变的。而更熟悉 Python 的程序员会知道元组并非完全不可变，元组与大多数 Python 容器一样，存储的都是对对象的引用。因此，当你在元组中存储像列表这样不可哈希的容器时，元组本身就会变为不可哈希的了，你也可以通过改变存储在元组的列表来改变元组的值。也就是说，元组的不可变性其实是指 tuple 数据结构的物理内容不可变，与引用的对象无关。</p><h2 id="浅拷贝与深拷贝">浅拷贝与深拷贝</h2><p>要复制列表或多数内置的可变容器很简单，只需要 <code>list(a)</code> 或者 <code>a[:]</code> 即可。但是这种复制默认是浅拷贝，也就是说它只会复制最外层的容器，内部引用的项还是和原容器一样的。这样就可能会造成一些意想不到的问题。比如改变复制后的列表中内部的一个可变容器的内容时，原列表也会因此改变。而为了解决这个问题，我们就有了深拷贝。<code>copy</code> 模块提供的 <code>copy</code> 和 <code>deepcopy</code> 就分别是浅拷贝和深拷贝，深拷贝复制时就会连着容器的项一起复制了。</p><p>注意，深拷贝并不是一件简单的事，如果对象有引用循环，那么简单的算法会出现死循环。当然，<code>deepcopy</code> 能优雅地解决这个问题（引用循环指 <code>a = [10, 20]; b = [a, 30]; a.append(b)</code>）。</p><h2 id="函数的参数">函数的参数</h2><p>Python 唯一支持的参数传递模式就是共享传参。也就是说函数的形参获得的是实参的引用副本，是实参的别名，也因此在函数内部对传入的列表就地修改时，列表本身就会发生变化。</p><p>而与之相关的一个问题就是默认值。可选参数具有默认值，但如果你给的默认值是一个可变的值，会发生什么情况呢？答案就是在不指定默认值的内容时，函数内部与默认值相关的变量都会是默认值的别名。举个例子，你给一个类的默认值设置为空列表，并在类中实现了 <code>append</code> 方法。如果你创建实例时使用了默认值，那你使用 <code>append</code> 方法时就会改变这个类本身默认值的内容，新创建的实例的默认值也会包含另一个实例添加的内容。这也是为什么通常用 <code>None</code> 作为接收可变值参数的默认值。</p><h2 id="del-与垃圾回收">del 与垃圾回收</h2><p>很多人对 <code>del</code> 有个误解，认为使用 <code>del</code> 就能删除对象。但实际上，<code>del</code> 语句删除的是引用。<code>del</code> 可能导致对象被当作垃圾回收，但是仅仅是当删除的变量是保存对象的最后一个引用时才会发生。重新绑定也能导致引用数量归零而对象被销毁。在 CPython 中，垃圾回收主要就是引用计数，引用计数归零时就会销毁对象。而有些 Python 的垃圾回收原理则更复杂，不依赖引用计数。</p><p>如果想要演示对象生命结束是怎么样的，可以使用弱引用库 <code>weakref</code>，用它对对象产生的引用不会被作为引用计数，也就是说使用它时，对象依然可能会因为引用计数归零而被销毁，这样你就可以监控对象生命了。</p><h2 id="不可变容器的复制行为">不可变容器的复制行为</h2><p>值得一提的是，Python 对元组进行如 <code>tuple(a)</code> 或 <code>a[:]</code> 这样的操作时并不会复制，返回的依然是对象本身，因为元组毕竟不可变，复制了也没什么意义。如果你进行测试，会发现副本的 <code>id</code> 不会发生任何变化。当然，不止元组，其他不可变容器像 <code>str</code>，<code>bytes</code> 以及 <code>frozenset</code> 也一样（<code>frozenset</code> 就没有什么 <code>[:]</code> 的用法了，不过使用 <code>a.copy()</code> 也是一样的结果）。</p><p>除此之外，<code>str</code> 还有一种驻留机制，当你给不同变量赋值内容相同的 <code>str</code> 时，一般它们的 <code>id</code> 也会是相等的，在 CPython 中整型也有驻留机制，一些热门数字也会使用同一个对象而不是重新创建。但是注意，这些驻留机制并不对所有 <code>str</code> 或 <code>int</code> 都起作用，这种和它本身的技术实现有关了，所以不要认为 <code>str</code> 就可以使用 <code>is</code> 了。</p><blockquote><p><strong>Tips</strong>：在使用 <code>+=</code> 或 <code>*=</code> 时，如果对象可变那会直接就地操作，如果不可变比如元组则会创建一个新元组。对于元组这种容器，因为其内部没有对对象是否可哈希进行判断，因此是相对不可变的。但是像 <code>frozenset</code> 这种内部对象都要求必须可哈希，就是完全不可变的了（<code>set</code> 也是内部对象必须可哈希，因此你不能嵌套 <code>set</code>，这也是 <code>frozenset</code> 出现的一个原因）。</p></blockquote>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/04/python-features/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/04/python-features/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/04/python-features/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/04/python-features/"/>
     <published>2026-05-04T09:43:19.000Z</published>
     <summary>
       <![CDATA[<p>一般人们解释变量时，都会把变量比作盒子。但对于像 Python 这样的引用式变量就不能这样理解了，更合理的解释应当是变量是便利贴。赋值语句就相当于贴便利贴。因此，<code>b = a</code> 应当理解为在标注为 <code>a</code> 的对象上再贴一个标志 <]]>
@@ -37,17 +37,17 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/Python/"/>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/Python/%E5%90%8E%E7%AB%AF/"/>
-    <category term="数据类" scheme="https://oldtangyuan.netlify.app/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/"/>
-    <category term="namedtuple" scheme="https://oldtangyuan.netlify.app/tags/namedtuple/"/>
-    <category term="dataclass" scheme="https://oldtangyuan.netlify.app/tags/dataclass/"/>
-    <category term="设计模式" scheme="https://oldtangyuan.netlify.app/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/Python/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/Python/%E5%90%8E%E7%AB%AF/"/>
+    <category term="数据类" scheme="https://blog.oldtangyuan.top/tags/%E6%95%B0%E6%8D%AE%E7%B1%BB/"/>
+    <category term="namedtuple" scheme="https://blog.oldtangyuan.top/tags/namedtuple/"/>
+    <category term="dataclass" scheme="https://blog.oldtangyuan.top/tags/dataclass/"/>
+    <category term="设计模式" scheme="https://blog.oldtangyuan.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
     <content>
       <![CDATA[<h1>Python 数据类</h1><p>Python 中的数据类可通过三种数据类构建器来构建，分别为 <code>collections.namedtuple</code>，<code>typing.NamedTuple</code> 以及 <code>dataclasses.dataclass</code>（前两者还有个名字叫<strong>具名元组</strong>）。</p><p>数据类的一大好处就是已经定义好了一些魔法方法，比如 <code>__str__</code>、<code>__eq__</code> 什么的，正常的类你 <code>print</code> 出来的东西是其内存地址（在 CPython 中），而数据类则是构造函数形式展示的字符串；而且正常类你无法对其进行比较（只能比较 <code>id</code>，和 <code>is</code> 差不多了），而数据类则是值相同的实例就能被 <code>==</code> 判断为 <code>True</code>，这就很方便了。刚好可以作为数据的载体（特别是一些数据类是可哈希的（毕竟是不可变的））。</p><h2 id="collections-namedtuple">collections.namedtuple</h2><p>先说 <code>collection</code> 的，它是 <code>tuple</code> 的子类，无法使用 <code>class</code> 字面量来定义，只能通过 <code>DataClass = namedtuple('DataClass', 'data content')</code> 来创建，然后你就可以通过 <code>data_1 = DataClass(data, text)</code> 来创建一个数据类实例（type 为 <code>tuple</code>，因此它不可变）。不过正因为它无法使用 <code>class</code> 字面量定义，所以使用者应该不多（因为这样不好加方法，当然它也是能通过注入方法来加方法的）。不过有一说一，构造函数其实比 <code>class</code> 字面量更快，毕竟 <code>class</code> 字面量是要进行多行检测的。</p><h2 id="typing-NamedTuple">typing.NamedTuple</h2><p>接下来是 <code>typing</code> 的，这个数据类一个好处就是方便加类型提示（但是每个属性都需要类型提示）。你可以像 <code>collection</code> 的那样直接用构造函数来创建 <code>DataClass = NamedTuple('DataClass', [('data', dict), ('content', str)])</code>，这和上一个没什么区别。你还可以通过另一种方式构建，也就是 <code>class</code> 字面量，这正是它比上一个的优势所在：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dataclass</span>(<span class="title class_ inherited__">NamedTuple</span>):</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure><p>这样的形式你就可以相当方便地添加一些方法了，而且可读性也更高（其中还有默认值相关未介绍，其实默认值没什么好说的，<code>content: str = ''</code> 就能创建默认值了）。当然，你看到 <code>(NamedTuple)</code> 后可能会认为这是继承，这其实是一个误区，<code>DataClass</code> 并不是 <code>NamedTuple</code> 的子类，它还是 <code>tuple</code> 的子类，而 <code>NamedTuple</code> 实际上是一个元类（元类这玩意比较复杂，具体是什么我还没学捏），所以本质上这种行为和继承无任何关系。</p><h2 id="dataclasses-dataclass">dataclasses.dataclass</h2><p>最后是 <code>dataclasses</code> 的了，我感觉这个应该是最合适使用的了，它就不是 <code>tuple</code> 的子类了，它父类是 <code>object</code>，和正常的类一致，这也表示它其实是可变的（当然你也可以让它不可变，但是你还是可以通过一些方法来改变其中的内容）。它无法通过构造函数来构建，而是使用了类装饰器：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DataClass</span>:</span><br><span class="line">    data: <span class="built_in">dict</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br></pre></td></tr></table></figure><p>如果你需要不可变的就要给装饰器加上参数 <code>@dataclass(frozen=True)</code>，这样就无法给它构造的类加属性了（但是这种不可变还是比较局限的）。你可以像 <code>content: str = ''</code> 这样来给它加上默认值，但需要注意的是，<code>content: str = ''</code> 创建的为实例属性，而不是类属性；但是如果你是像 <code>content = ''</code> 这样创建的话，它就又成了类属性，这是需要警惕的。如果你想要类型注释和默认值但又要类属性，你就需要 <code>typing.ClassVar</code>，通过 <code>content: ClassVar[str] = ''</code> 创建的就是类属性啦。同时，数据类如果要使用可变的容器（如 <code>dict</code> 和 <code>list</code>）的话，不能直接将它们作为默认值，而是需要使用 <code>dataclasses.field(default_factory=list)</code> 来创建默认值，比如 <code>data: dict = field(default_factory=dict)</code>，这样能防止实例共用属性，直接用 <code>[]</code> 的话会直接报错。</p><p>除此之外，有关数据类其实有个说法，就是，数据类属于一种代码“异味”，正如一句话所说“数据类就像一个小孩子，如果要在一个复杂的系统使用，数据类就得承担一些责任”，这句话所表示的也就是不要把数据类当作一个单纯的数据的载体，有关里面数据的调用都应当由数据类自身的方法实现，而不应该在外部创建一个函数来处理。数据类固然好用，但是也不能滥用。</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/04/python-dataclass/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/04/python-dataclass/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/04/python-dataclass/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/04/python-dataclass/"/>
     <published>2026-05-04T05:43:22.000Z</published>
     <summary>
       <![CDATA[<h1>Python 数据类</h1>
@@ -60,16 +60,16 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/%E5%90%8E%E7%AB%AF/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/%E5%90%8E%E7%AB%AF/Python/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/tags/Python/"/>
-    <category term="Unicode" scheme="https://oldtangyuan.netlify.app/tags/Unicode/"/>
-    <category term="编码" scheme="https://oldtangyuan.netlify.app/tags/%E7%BC%96%E7%A0%81/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/%E5%90%8E%E7%AB%AF/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/%E5%90%8E%E7%AB%AF/Python/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/tags/Python/"/>
+    <category term="Unicode" scheme="https://blog.oldtangyuan.top/tags/Unicode/"/>
+    <category term="编码" scheme="https://blog.oldtangyuan.top/tags/%E7%BC%96%E7%A0%81/"/>
     <content>
       <![CDATA[<p>其实我感觉这方面的知识用得不会很多，所以大概是介绍不了太多文字了（</p><h2 id="Python-2-与-Python-3-的字符串差异">Python 2 与 Python 3 的字符串差异</h2><p>首先是 Python 3 的 <code>str</code>，它其实就是 Python 2 的 <code>unicode</code> 类（我记得是完全一样的），而 Python 2 的 <code>str</code> 则和 Python 3 的 <code>bytes</code> 类似（不完全一样）。所以 Python 3 对字符的支持可能更多、更好。不过鉴于 Python 3 的内部灵活表示机制（PEP 393），也可能存在一些需要注意的细节，比如纯 ASCII 字符串内部使用 1 字节存储，一旦出现更大的码点字符，整个字符串的内部存储单元会相应扩大。</p><h2 id="Unicode-码点组合与规格化">Unicode 码点组合与规格化</h2><p>关于 Unicode，其实有很多字符是可以通过码点组合而来的，虽然显示都一样，但是 Python 解释器可不吃你这套，使用 <code>==</code> 照样为 <code>False</code>。但这就有一个问题了：如果要实现对字符的搜索，这样难道不会搜索不到吗？</p><p>所以，我们有了<strong>规格化操作</strong>，有 4 种方式，分别为：</p><ul><li><strong>NFC</strong>：将可以合并的码点合并</li><li><strong>NFD</strong>：将能拆分的码点拆分</li><li><strong>NFKC</strong>：兼容性合并</li><li><strong>NFKD</strong>：兼容性拆分</li></ul><p>它们都能起到一个不错的规格化作用（其实 NFC 最常用），但是还是不够适合搜索。于是我们有了 NFKC 和 NFKD（不过可能只适合搜索就是了，因为会改变一些原字符含义），它们会将一些字符拆分，比如 <code>½</code> 会被拆分为 <code>1/2</code>，<code>4⁵</code>（4 和上标 5）会被拆分为普通字符 <code>45</code>（这种已经完全改变原义了），但是这样很方便用户搜索。</p><h2 id="Unicode-三明治原则">Unicode 三明治原则</h2><p>接下来是 Unicode 的一个重要处理原则：<strong>Unicode 三明治原则</strong>。</p><p>这个原则应该能解决很多 Unicode 相关的问题，它的要求是：</p><ul><li>在接收字符时解码（<code>bytes</code> → <code>str</code>）</li><li>中间程序对字符的操作都是 100% 的 <code>str</code></li><li>发送字符时再编码（<code>str</code> → <code>bytes</code>）</li></ul><p>这是一个相当合理的操作，能有效减少一些出问题的可能性。<code>open()</code> 函数就遵循了这样的原则，它会在读取文件时获取 <code>bytes</code> 内容再解码为指定编码内容，写入时则是将需要写入的 <code>str</code> 转为 <code>bytes</code> 再写入。</p><h2 id="N-转义字符"><code>\N{}</code> 转义字符</h2><p>Python 还支持一种与 Unicode 相关的特殊转义字符 <code>\N{}</code>，它会将 <code>{}</code> 内的 Unicode 名字变为对应的 Unicode 字符，有些时候可能挺方便的。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\N&#123;GREEK SMALL LETTER ALPHA&#125;&quot;</span>)  <span class="comment"># 输出: α</span></span><br></pre></td></tr></table></figure><h2 id="BOM（字节顺序标记）">BOM（字节顺序标记）</h2><p>还有一些编码的文件，你去看它的 <code>bytes</code> 会发现其中有些原本&quot;不存在&quot;的字符，其中 <strong>BOM</strong> 就是一个很有用的标记。它代表文件所使用的编码是哪个，比如 UTF-16（带 BOM）就有 BOM 来区分 UTF-16LE 和 UTF-16BE，这样 BOM 就很重要了。不过也有不带 BOM 的一些编码格式（带上 BOM 其实也没区别），比如 UTF-8。但是鉴于一些文档软件会自动给编码生成 BOM，所以解码时建议使用 <code>utf-8-sig</code>，有没有 BOM 它都能正常解码。</p><blockquote><p><strong>注意</strong>：千万不要给 Python 代码文件的 UTF-8 加上 BOM，这会导致一些潜在的问题。</p></blockquote>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/04/python-unicode/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/04/python-unicode/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/04/python-unicode/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/04/python-unicode/"/>
     <published>2026-05-04T05:37:39.000Z</published>
     <summary>
       <![CDATA[<p>其实我感觉这方面的知识用得不会很多，所以大概是介绍不了太多文字了（</p>
@@ -83,15 +83,15 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/Python/"/>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/Python/%E5%90%8E%E7%AB%AF/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/tags/Python/"/>
-    <category term="match-case" scheme="https://oldtangyuan.netlify.app/tags/match-case/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/Python/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/Python/%E5%90%8E%E7%AB%AF/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/tags/Python/"/>
+    <category term="match-case" scheme="https://blog.oldtangyuan.top/tags/match-case/"/>
     <content>
       <![CDATA[<p>Python 3.10 更新了模式匹配，也就是 match-case。这并不是简简单单的对 C 语言 switch-case 的模仿，事实上 switch-case 是完全可以由 if-elif-elif… 代替的，而 match-case 最大的提升就是支持了解构——一种高级拆包形式，同时，这也是解构第一次在 Python 世界中出现。</p><h2 id="解构与卫语句">解构与卫语句</h2><p>模式匹配还支持卫语句，也就是在模式语句之后的 if 语句，模式匹配要同时满足模式语句以及卫语句（可选）才能成功匹配，不然就会转到下一个 case。</p><h2 id="通配符与类型检查">通配符与类型检查</h2><p><code>_</code> 在模式匹配上下文中有特殊含义，它可以匹配任何模式，也就是说，你可以使用 <code>case _</code> 来作为 if 语句的 else 使用。除此之外，模式匹配上下文中 <code>str()</code>，<code>float()</code> 等并不是构造函数，而是作为类型检查，也就是说 <code>case [str(text)]</code> 表示匹配只含 1 项的序列（这也叫做序列匹配），且那一项必须为 str。</p><h2 id="序列匹配的限制">序列匹配的限制</h2><p>必须说明的是，序列匹配只能匹配序列（str，bytes 以及迭代器都不支持解构，其中 str 和 bytes 是因为它们属于“原子”值，也就是一个整体），像列表、元组、range 以及数组等都是可以正常解构的。</p><h2 id="基本语法示例">基本语法示例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">metro_areas = [</span><br><span class="line">    (<span class="string">&#x27;Tokyo&#x27;</span>, <span class="string">&#x27;JP&#x27;</span>, <span class="number">36.933</span>, (<span class="number">11.11</span>, <span class="number">55.55</span>)),</span><br><span class="line">    (<span class="string">&#x27;Shanghai&#x27;</span>, <span class="string">&#x27;CN&#x27;</span>, <span class="number">24.9</span>, (<span class="number">31.1</span>, <span class="number">121.3</span>))</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> record <span class="keyword">in</span> metro_areas:</span><br><span class="line">    <span class="keyword">match</span> record:</span><br><span class="line">        <span class="keyword">case</span> [<span class="built_in">str</span>(name), _, _, (<span class="built_in">float</span>(lat), <span class="built_in">float</span>(lon))] <span class="keyword">if</span> lon &lt;= <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;name:<span class="number">15</span>&#125;</span> | <span class="subst">&#123;lat:<span class="number">9.4</span>f&#125;</span> | <span class="subst">&#123;lon:<span class="number">9.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure><p>当然，匹配中也可以将 <code>str(name)</code> 改为确定的字符串如 <code>'Shanghai'</code>，这样就只会匹配 <code>'Shanghai'</code> 一个了。</p><h2 id="评价">评价</h2><p>模式匹配在某些情况下其实挺好用的，if 语句是比不了的，事实上它对 if 语句还能进一步简化。</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/04/python-match-case/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/04/python-match-case/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/04/python-match-case/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/04/python-match-case/"/>
     <published>2026-05-04T05:33:54.000Z</published>
     <summary>
       <![CDATA[<p>Python 3.10 更新了模式匹配，也就是 match-case。这并不是简简单单的对 C 语言 switch-case 的模仿，事实上 switch-case 是完全可以由 if-elif-elif… 代替的，而 match-case 最大的提升就是支持了解构——一种]]>
@@ -103,17 +103,17 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/Python/"/>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/Python/%E5%90%8E%E7%AB%AF/"/>
-    <category term="字典" scheme="https://oldtangyuan.netlify.app/tags/%E5%AD%97%E5%85%B8/"/>
-    <category term="集合" scheme="https://oldtangyuan.netlify.app/tags/%E9%9B%86%E5%90%88/"/>
-    <category term="视图" scheme="https://oldtangyuan.netlify.app/tags/%E8%A7%86%E5%9B%BE/"/>
-    <category term="哈希表" scheme="https://oldtangyuan.netlify.app/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/Python/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/Python/%E5%90%8E%E7%AB%AF/"/>
+    <category term="字典" scheme="https://blog.oldtangyuan.top/tags/%E5%AD%97%E5%85%B8/"/>
+    <category term="集合" scheme="https://blog.oldtangyuan.top/tags/%E9%9B%86%E5%90%88/"/>
+    <category term="视图" scheme="https://blog.oldtangyuan.top/tags/%E8%A7%86%E5%9B%BE/"/>
+    <category term="哈希表" scheme="https://blog.oldtangyuan.top/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/"/>
     <content>
       <![CDATA[<h1>Python 字典</h1><p>一个有意思的事实是，Python 的字典的 <code>.keys()</code> 和 <code>.items()</code> 方法返回的是两个内置的视图对象，且无法被外部直接拿去使用（但可以获取该实例）。它们属于<strong>字典视图</strong>（在 Python 2 中是以列表形式显现的，因为无意义占用内存，所以在 Python 3 中被改为了现在的视图）。</p><p>当然，因为字典使用的是哈希表，所以其查询速度比序列更快（但是占用内存也更大，因为哈希表需要保留约 1/3 的空间）。</p><p>值得一提的是，创建字典字面量 <code>{a:1, b:2}</code> 比使用构造函数 <code>dict(a=1, b=2)</code> 效率更高（书中写的是 set，不过我想字典应该也差不多）。而且在创建一个类实例时，内部也会构建一个哈希表，因此应当在 <code>__init__</code> 中来创建字典实例，这样字典与实例就是共用的同一个哈希表（在方法中创建会新建一个哈希表），这样可以节省内存（不过好像一个进程只有效一次？这部分我没太看懂）。</p><h1>Python 集合</h1><p>很有意思的是，Python 的 set 实现了数学意义上对集合的所有使用方法，包括交集、并集、差集、对称差集等，且 set 里面的内容必须是可哈希的（但 set 本身不可哈希，因此 set 无法嵌套，而 <code>frozenset</code> 是可哈希的）。不过鉴于 Python 每次创建进程时哈希码都会有所不同，因此 set 里面的元素是完全无序的。</p><p>如果想消除一个序列中的重复项同时保持顺序，可以使用 <code>dict.fromkeys(l)</code>，其中 <code>l</code> 为序列。此方法会把 <code>l</code> 映射为字典的 <code>.keys()</code> 视图，该视图会像集合一样删除重复项，但重要的是它能保留顺序（Python 3.7+ 中字典保持插入顺序），因此你可以把它转为序列重新使用。当然，鉴于 <code>.keys()</code> 和 <code>.items()</code> 的这种特性，它们是可以和 set 进行集合运算的！</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/03/python-dict/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/03/python-dict/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/03/python-dict/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/03/python-dict/"/>
     <published>2026-05-03T12:52:29.000Z</published>
     <summary>
       <![CDATA[<h1>Python 字典</h1>
@@ -126,16 +126,16 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/Python/"/>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/Python/%E5%90%8E%E7%AB%AF/"/>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/tags/Python/"/>
-    <category term="数据结构" scheme="https://oldtangyuan.netlify.app/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    <category term="排序" scheme="https://oldtangyuan.netlify.app/tags/%E6%8E%92%E5%BA%8F/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/Python/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/Python/%E5%90%8E%E7%AB%AF/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/tags/Python/"/>
+    <category term="数据结构" scheme="https://blog.oldtangyuan.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    <category term="排序" scheme="https://blog.oldtangyuan.top/tags/%E6%8E%92%E5%BA%8F/"/>
     <content>
       <![CDATA[<h1>Python 字典</h1><p>Python 的很多东西其实都是基于 dict（函数的形参在内部就使用了 dict 结构），有人说过 Python 其实就是个包裹在一堆语法糖中的字典，也正因此 Python 对 dict 进行了特殊优化，处理速度非常快。set 也是同理，Python 的 set 比其他语言高级不少，支持了基本数学上所有的集合方法，在检索方面相较于列表也是速度更快的。</p><h1>Python 队列</h1><p>列表虽然功能强大，理论上可以作为大部分容器来使用，但实际上在针对很多问题时列表并不是最好的选择。比如针对 FIFO 的问题时，deque（双端队列）是更好的选择，因为它从左边以及右边增删元素都是 O(1)，还可以设置 maxlen 可选参数来指定队列长度，队列满时左边新增右边就删，反之同理。deque 还有一些特殊方法如 rotate，可以从某一端取出指定数量的元素加到另一端，也是相当有意思的（注意，deque 从中间取元素的效率并不高）。</p><p>当然，queue 模块中的队列在一些情况下也是不错的选择，但需要注意的是，queue.Queue 指定 maxsize 满后并不会删除元素，而是会阻塞等待元素取走再添加。</p><p>asyncio 中的队列底层是基于 deque 等数据结构实现的，并非专有的异步队列，而是结合了异步等待机制（我一直以为会有完全专属于异步的队列呢）。</p><h1>Python 排序算法</h1><p>还有，Python 的排序算法是 Timsort，是一个非常高效的算法，创始人 Tim 同样也是 Python 的老行家了，Python 之禅就出于他手。</p><p>说到排序，就不得不提到 key 关键参数了，这在很多语言中并不常见，它可以通过指定 key 来实现一些特殊的排序，比如可以用 key=int 对一个只包含数字字符串的列表进行数值排序（key 需要是一个函数），它最大的优点是排序过程中每个元素只会被调用一次 key 函数。（值得一提的是，max 和 min 函数也有 key 可选参数）</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/03/python-tips/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/03/python-tips/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/03/python-tips/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/03/python-tips/"/>
     <published>2026-05-03T12:48:30.000Z</published>
     <summary>
       <![CDATA[<h1>Python 字典</h1>
@@ -148,16 +148,16 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="Python" scheme="https://oldtangyuan.netlify.app/categories/Python/"/>
-    <category term="后端" scheme="https://oldtangyuan.netlify.app/categories/Python/%E5%90%8E%E7%AB%AF/"/>
-    <category term="Python小知识" scheme="https://oldtangyuan.netlify.app/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
-    <category term="切片" scheme="https://oldtangyuan.netlify.app/tags/%E5%88%87%E7%89%87/"/>
-    <category term="slice" scheme="https://oldtangyuan.netlify.app/tags/slice/"/>
+    <category term="Python" scheme="https://blog.oldtangyuan.top/categories/Python/"/>
+    <category term="后端" scheme="https://blog.oldtangyuan.top/categories/Python/%E5%90%8E%E7%AB%AF/"/>
+    <category term="Python小知识" scheme="https://blog.oldtangyuan.top/tags/Python%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+    <category term="切片" scheme="https://blog.oldtangyuan.top/tags/%E5%88%87%E7%89%87/"/>
+    <category term="slice" scheme="https://blog.oldtangyuan.top/tags/slice/"/>
     <content>
       <![CDATA[<h1>Python 切片</h1><p>切片远比你想象的强大。你常见的惯用法可能是 <code>list[start:stop:step]</code>，但事实上 Python 支持多维切片，也就是 <code>[i, j]</code>，它会作为元组传入。之所以 Python 原生库很少见到多维切片，是因为基本所有序列都是一维的（<code>memoryview</code> 有可能不是），而对于 <code>numpy</code> 来说，它就可以通过多维切片来进行更方便的处理，比如：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array[<span class="number">3</span>:, :<span class="number">3</span>]</span><br></pre></td></tr></table></figure><h2 id="切片赋值">切片赋值</h2><p>可变序列（如列表）的切片可以被同一种序列的内容替换，这也是相当方便的处理。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">list</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</span><br><span class="line"><span class="built_in">list</span>[<span class="number">2</span>:] = [<span class="number">114514</span>]</span><br><span class="line"><span class="comment"># list 变为 [1, 2, 114514]</span></span><br></pre></td></tr></table></figure><h2 id="使用-slice-对象">使用 slice 对象</h2><p>序列的切片实际上是使用了 <code>slice</code> 函数，<code>list[:]</code> 等同于 <code>list[slice(None, None)]</code>。</p><p>这有什么好处呢？好处就是你可以对切片进行命名。比如对于比较规整的字符串，你可以给一个专门切名字的切片命名为：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name = <span class="built_in">slice</span>(<span class="literal">None</span>, <span class="number">10</span>)</span><br></pre></td></tr></table></figure><p>调用时只需使用 <code>list[name]</code> 就可以完成切片，大大增加了可读性。</p><h2 id="注意嵌套列表的构建">注意嵌套列表的构建</h2><p>对于嵌套列表，需要注意的是，最好不要使用 <code>*</code> 来复制嵌套列表，而应该使用列表推导式，以防止内部嵌套的列表指向的是同一个列表导致的错误。</p><p>例如 <code>[[[], []], [[], []]]</code> 就是一个需要预防这种问题的嵌套列表——如果用乘法构造类似结构，很容易让子列表共享同一引用，造成意外修改。</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/03/python-slice/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/03/python-slice/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/03/python-slice/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/03/python-slice/"/>
     <published>2026-05-03T12:44:45.000Z</published>
     <summary>
       <![CDATA[<h1>Python 切片</h1>
@@ -170,16 +170,16 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="前端" scheme="https://oldtangyuan.netlify.app/categories/%E5%89%8D%E7%AB%AF/"/>
-    <category term="Hexo" scheme="https://oldtangyuan.netlify.app/categories/%E5%89%8D%E7%AB%AF/Hexo/"/>
-    <category term="Hexo" scheme="https://oldtangyuan.netlify.app/tags/Hexo/"/>
-    <category term="设计" scheme="https://oldtangyuan.netlify.app/tags/%E8%AE%BE%E8%AE%A1/"/>
-    <category term="建站" scheme="https://oldtangyuan.netlify.app/tags/%E5%BB%BA%E7%AB%99/"/>
+    <category term="前端" scheme="https://blog.oldtangyuan.top/categories/%E5%89%8D%E7%AB%AF/"/>
+    <category term="Hexo" scheme="https://blog.oldtangyuan.top/categories/%E5%89%8D%E7%AB%AF/Hexo/"/>
+    <category term="Hexo" scheme="https://blog.oldtangyuan.top/tags/Hexo/"/>
+    <category term="设计" scheme="https://blog.oldtangyuan.top/tags/%E8%AE%BE%E8%AE%A1/"/>
+    <category term="建站" scheme="https://blog.oldtangyuan.top/tags/%E5%BB%BA%E7%AB%99/"/>
     <content>
       <![CDATA[<h1>引言</h1><p>作为本站第一个正式博客技术分享，我觉得应该很多人会想了解像这样一个博客站是如何搭建的。<br>其实很简单，按接下来的步骤一步步来，你也能0成本搭建一个属于自己的博客站点。<br>接下来让我们进入正题。</p><h1>正文</h1><h2 id="Hexo的搭建">Hexo的搭建</h2><p>首先，要能0成本搭建一个博客站点，那我们就只能通过静态博客来搭建。而<a href="https://hexo.io/">Hexo</a>便是这样一个很不错的静态博客框架，所以我们需要先在本地搭建一个Hexo。</p><p>如果你想要了解关于Hexo更详细的内容，可以看看它的<a href="https://hexo.io/docs/">文档</a>来获得更全面的信息。</p><h3 id="安装Watt-Toolkit-Steam">安装Watt Toolkit(Steam++)</h3><p>为了能正常访问GitHub，你可以下载并安装<a href="https://steampp.net/">Watt Toolkit</a>，这是一款免费的加速器，可以对Steam、GitHub等进行加速。</p><h3 id="安装Node-js和Git">安装Node.js和Git</h3><p>为了能部署Hexo，我们需要首先安装<a href="http://nodejs.org/">Node.js</a>（建议版本12.0及以上，推荐使用最新LTS版本）。<br>相关安装教程可以自行在Node.js或Hexo文档查看，这里就不多赘述了。</p><p>安装完成后可以运行以下命令来检测是否成功：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure><p>为了让npm下载速度更快，我们也可以通过以下指令来换源：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmmirror.com</span><br><span class="line">npm config get registry</span><br></pre></td></tr></table></figure><p>如果返回 <strong><a href="https://registry.npmmirror.com">https://registry.npmmirror.com</a></strong> 代表成功更改镜像源。</p><p>接下来是Git的安装，安装Git是为了方便之后将静态博客推送到GitHub Pages（如果不理解没关系，照着步骤做就行）。</p><p>Windows系统需要下载并安装<a href="https://git-scm.com/download/win">Git</a>。<br>Mac系统可以使用<a href="https://sourceforge.net/projects/git-osx-installer/">安装程序</a>。<br>Linux (Ubuntu, Debian)只需执行以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> apt-get install git-core</span><br></pre></td></tr></table></figure><p>Linux (Fedora, Red Hat, CentOS)则需要执行如下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> yum install git-core</span><br></pre></td></tr></table></figure><p>把这两个安装完成后，我们便可以进行下一步了。</p><h3 id="安装Hexo">安装Hexo</h3><p>安装Hexo相当简单，我们只需使用npm命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure><p>这样一来，我们便完成了所有需要的安装任务。</p><h3 id="正式搭建">正式搭建</h3><p>安装完Hexo后，我们便可以正式搭建静态博客了。<br>首先按顺序执行以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo init &lt;folder&gt;</span><br><span class="line"><span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure><p>其中<code>&lt;folder&gt;</code>改为你所想要的文件名，比如<code>my_blog</code>（最好使用英文，且不要使用特殊字符）。</p><p>初始化完成后你应该能看到以下项目文件夹目录：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure><p>那么恭喜你，你已经完成了最基础的博客站搭建（海豹拍肚皮声.wav）。</p><p>如果你已经迫不及待想看看搭建完成的网站，可以运行以下命令来看看效果如何：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure><p>等终端输出完信息，把 <a href="http://localhost:4000/">http://localhost:4000/</a> 输入进网页便打开啦~</p><h3 id="配置博客">配置博客</h3><h4 id="基础博客配置">基础博客配置</h4><p>打开刚部署好的博客，你会发现，显示的东西相当简约，而且与自己一点关系没有，全是英文看得云里雾里。<br>这其实是因为我们还没配置好博客。<br>所以接下来你可以在相关文件夹根目录中寻找<a href="https://hexo.io/zh-cn/docs/configuration">_config.yml</a>这个文件，并在其中进行一些基础配置。<br>配置完后，你只需刷新一下网页，就会发现博客已经变成符合你信息的样子了。</p><h4 id="切换主题">切换主题</h4><p>当然，你可能还是很不满意，觉得Hexo这个默认的主题很不好看。<br>那你就可以尝试一下换个主题。<br>首先，你可以在这个<a href="https://hexo.io/themes/">网站</a>寻找自己喜欢的主题。<br>比如本站使用的是<a href="https://github.com/everfu/hexo-theme-solitude">Solitude</a>这个主题。</p><p>要下载主题，你可以使用这个指令（这里以Solitude为例）：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-theme-solitude</span><br></pre></td></tr></table></figure><p>但需要<strong>注意</strong>的是，这样安装的主题会安装在<code>node_modules</code>文件夹里面，在配置主题时可能会相当不方便。<br>你可以尝试把整个主题文件移动到<code>themes</code>文件夹中以方便配置。<br>当然，如果你就是想放在<code>node_modules</code>文件夹中，那在根目录的<code>_config.yml</code>文件的<code>theme</code>配置一定要填对应主题名字如<code>solitude</code>，而不是文件夹名字。</p><p>而在<code>themes</code>文件夹中的主题则需要在根目录的<code>_config.yml</code>文件的<code>theme</code>配置中填入对应文件夹名，如<code>hexo-theme-solitude</code>，这样才能正常使用。</p><h4 id="主题配置">主题配置</h4><p>你可能发现了，即使切换了主题，整个页面依然是相当简约。<br>所以，接下来你需要配置主题。<br>首先，在对应主题文件夹中找到主题的<code>_config.yml</code>文件，一般你都可以在对应主题的官网寻找到主题的配置文档。<br>比如Solitude的<a href="https://solitude.js.org/cn/getting-started/introduction">配置文档</a>。</p><p>但有些不愿折腾的小白可能看完就想直接放弃。<br>所以一个小妙招就是你可以让AI帮你完成一些配置。<br>比如GitHub Copilot或Windsurf这类代码Agent软件，而你只需要在输入框让它先搜索对应主题文档再帮你完成配置就可以啦~<br>在完成这一切后，你就能拥有一个像本站这样美观的一个博客。</p><h2 id="编写博客">编写博客</h2><p>在搭建完博客后，你便可以通过一些指令来实现最基础的编写。<br>比如通过以下指令创建一个新文章：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &lt;title&gt;</span><br></pre></td></tr></table></figure><p>然后你就可以在根目录的<code>source</code>文件夹中的<code>_posts</code>文件夹找到对应的md文件，打开这个文件你便可以通过编写markdown文档来写博客啦~</p><p>当然，如果你需要的是生成一个新界面而不是文章，就可以使用以下命令（这里以about界面举例）：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page about</span><br></pre></td></tr></table></figure><p>更多的内容这里就不多赘述了，感兴趣可以看看<a href="https://hexo.io/zh-cn/docs/writing">Hexo写作文档</a>教程。</p><h2 id="在GitHub-Pages搭建静态博客">在GitHub Pages搭建静态博客</h2><p>之所以我们能0成本搭建一个博客，正是因为我们能通过GitHub Pages来蹭一个域名。<br>而在那之前，我们需要先对git进行配置。</p><h3 id="Git的配置">Git的配置</h3><p>首先你需要一个GitHub账号，然后你需要输入以下命令，分别是你的GitHub用户名和登录GitHub的邮箱：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;&lt;Your GitHub username here&gt;&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;&lt;Your GitHub email here&gt;&quot;</span></span><br></pre></td></tr></table></figure><p>接着创建SSH密钥，按如下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;&lt;Your GitHub email here&gt;&quot;</span></span><br></pre></td></tr></table></figure><p>对应密钥存储目录会在终端显示，例如Windows系统为 <strong>C:\Users&lt;Your user name&gt;.ssh\id_rsa.pub</strong>。<br>接下来你只需要用文本编辑器打开并完整复制里面的内容即可。</p><p>接着点击这个<a href="https://github.com/settings/keys">链接</a>，并点击 <strong>New SSH key</strong>。<br>把复制好的密钥填进去即可，Title可以随便写。<br>最后点击 <strong>Add SSH Key</strong> 即可完成。</p><p>为了验证是否配置成功，请输入以下指令。<br><strong>注意</strong>：在进行这一步时请关闭Watt Toolkit加速器，否则会出现连接不上的错误。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure><p>如果显示询问 <strong>Are you sure you want to continue connecting (yes/no/[fingerprint])?</strong>，这是正常现象，直接输入<code>yes</code>即可。<br>若出现以下内容即为配置成功：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hi &lt;username&gt;! You&#x27;ve successfully authenticated, but GitHub does not provide shell access</span><br><span class="line">Connection to github.com closed.</span><br></pre></td></tr></table></figure><h3 id="搭建GitHub-Pages仓库">搭建GitHub Pages仓库</h3><p>点击这个<a href="https://github.com/new">链接</a>新建一个仓库。<br>仓库名字选择 <strong>&lt;你的GitHub用户名&gt;.github.io</strong>，然后直接Create即可。</p><p>创建完成后点击对应仓库的 <strong>Settings</strong> 选项。<br>接着点击下面的 <strong>Pages</strong> 选项。<br>你会在写着 <strong>Build and deployment</strong> 下方找到一个框，点击它并选择为 <strong>Deploy from a branch</strong>（更合适的做法是使用Github Actions，具体做法请自行查阅），然后选择分支为 <code>main</code>（如果没有则选 <code>master</code>，或后续推送后会出现 <code>main</code>）。<br>这样一来你便完成了GitHub Pages仓库的搭建并白嫖到了一个域名 <strong>https://&lt;你的GitHub用户名&gt;.github.io/</strong>。</p><h3 id="推送Hexo静态博客到GitHub仓库">推送Hexo静态博客到GitHub仓库</h3><p>首先我们在本地博客文件夹找到 <strong>_config.yml</strong> 文件。<br>打开后翻到最底下找到 <strong>deploy</strong> 部分，并将其中的内容改为：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">&lt;Your</span> <span class="string">GitHub</span> <span class="string">repo</span> <span class="string">here&gt;.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure><p>保存后我们还需安装一个小插件以通过Git来推送静态博客：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure><p>接着依次输入：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean   <span class="comment"># 清除已有的静态博客内容</span></span><br><span class="line">hexo g       <span class="comment"># 生成静态博客内容</span></span><br><span class="line">hexo d       <span class="comment"># 推送到对应的仓库</span></span><br></pre></td></tr></table></figure><p>完成后，你便可以通过 <strong>https://&lt;你的GitHub用户名&gt;.github.io</strong> 来访问博客了。</p><h2 id="使用Netlify进行加速">使用Netlify进行加速</h2><p>完成上述步骤后你会发现，自己这博客站慢成这样用鸡毛啊。<br>但是没关系，我们可以通过Netlify来进行加速，并且完全免费哦。</p><h3 id="登录Netlify">登录Netlify</h3><p>首先需要先打开<a href="https://www.netlify.com/">Netlify</a>的官网进行登录。<br>登录完成后点击右上角的 <strong>Add new project</strong>。<br>在下面的 <strong>Import a Git repository</strong> 中选择 <strong>GitHub</strong>。<br>在允许Netlify访问仓库后就可以选择 <strong>&lt;你的GitHub用户名&gt;.github.io</strong> 这个仓库来搭建啦。<br>接着在 <strong>deploy project</strong> 界面中你需要设置 <strong>Project name</strong>，这边建议可以使用 <strong>&lt;你的GitHub用户名&gt;</strong>。<br>接着滑到最底下并点击 <strong>Deploy xxx</strong> 就可以完成搭建啦。<br>搭建完成后，你便可以通过 <strong>https://&lt;你的GitHub用户名&gt;.netlify.app/</strong> 来访问博客啦，而且速度快得多哦。</p><h2 id="博客的更新">博客的更新</h2><p>当你在本地更新了博客后，你只需运行以下指令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean   <span class="comment"># 清除已有的静态博客内容</span></span><br><span class="line">hexo g       <span class="comment"># 生成静态博客内容</span></span><br><span class="line">hexo d       <span class="comment"># 推送到对应的仓库</span></span><br></pre></td></tr></table></figure><p>然后再打开自己的博客网站，你就会发现博客界面已经成功更新，相当的简单。</p><h1>结语</h1><p>在经过这些操作以后，你就成功搭建了一个属于自己的博客了。<br>如果你最终成功了，那么就让我给你鼓个掌（海豹拍肚皮声.wav）。<br>而之后，你就可以尽情的进行博客的创作啦~</p><p>最后，如果你发现了这篇文章有任何纰漏，可以在评论中告知我，我会相当感谢并及时更改。<br>因为这是我的首篇正式博客，所以有所缺陷也请见谅。<br>希望大家看完后能有所收获并成功搭建一个属于自己的博客，感谢阅读~</p><h1>参考文献与致谢</h1><p>本篇博客参考了<a href="https://blog.xingchencloud.top/p/44443bb0.html">Hexo 静态博客搭建教程</a>的部分内容。<br>最后感谢<a href="https://blog.xuxiny.top/">XXY</a>提供的一些技术支持。</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/03/build-hexo/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/03/build-hexo/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/03/build-hexo/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/03/build-hexo/"/>
     <published>2026-05-03T09:07:05.000Z</published>
     <summary>
       <![CDATA[<h1>引言</h1>
@@ -196,12 +196,12 @@
     <author>
       <name>老汤圆</name>
     </author>
-    <category term="建站宣言" scheme="https://oldtangyuan.netlify.app/tags/%E5%BB%BA%E7%AB%99%E5%AE%A3%E8%A8%80/"/>
+    <category term="建站宣言" scheme="https://blog.oldtangyuan.top/tags/%E5%BB%BA%E7%AB%99%E5%AE%A3%E8%A8%80/"/>
     <content>
       <![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p><p>接下来，我也会创作各种各样有意思的技术内容或有趣知识</p><p>内容包括但不限于：<br>Python<br>机器学习<br>编程开发<br>学习心得<br>技术教程<br>LLM相关<br>…</p><p>最后希望大家能多多支持，多多关照捏~</p>]]>
     </content>
-    <id>https://oldtangyuan.netlify.app/2026/05/02/first_post/</id>
-    <link href="https://oldtangyuan.netlify.app/2026/05/02/first_post/"/>
+    <id>https://blog.oldtangyuan.top/2026/05/02/first_post/</id>
+    <link href="https://blog.oldtangyuan.top/2026/05/02/first_post/"/>
     <published>2026-05-02T14:41:17.000Z</published>
     <summary>
       <![CDATA[<p>在长时间的探索与设计后，老汤圆の博客站终于在2026年5月2日22时41分17秒建成</p>
