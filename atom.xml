@@ -10,7 +10,7 @@
   <rights>All rights reserved 2026, 老汤圆</rights>
   <subtitle>老汤圆的博客</subtitle>
   <title>老汤圆の小窝</title>
-  <updated>2026-05-04T12:17:20.656Z</updated>
+  <updated>2026-05-16T10:57:01.720Z</updated>
   <entry>
     <author>
       <name>老汤圆</name>
@@ -31,7 +31,7 @@
       <![CDATA[<p>一般人们解释变量时，都会把变量比作盒子。但对于像 Python 这样的引用式变量就不能这样理解了，更合理的解释应当是变量是便利贴。赋值语句就相当于贴便利贴。因此，<code>b = a</code> 应当理解为在标注为 <code>a</code> 的对象上再贴一个标志 <]]>
     </summary>
     <title>Python 对象引用、可变性和垃圾回收</title>
-    <updated>2026-05-04T12:17:20.656Z</updated>
+    <updated>2026-05-16T10:57:01.720Z</updated>
   </entry>
   <entry>
     <author>
@@ -54,7 +54,7 @@
 <p>Python 中的数据类可通过三种数据类构建器来构建，分别为 <code>collections.namedtuple</code>，<code>typing.NamedTuple</code> 以及 <code>dataclasse]]>
     </summary>
     <title>Python 数据类：namedtuple、NamedTuple 与 dataclass</title>
-    <updated>2026-05-04T05:47:53.088Z</updated>
+    <updated>2026-05-16T10:56:35.399Z</updated>
   </entry>
   <entry>
     <author>
@@ -77,7 +77,7 @@
 <p>首先是 Python 3 的 <code>str</co]]>
     </summary>
     <title>Python中的Unicode处理</title>
-    <updated>2026-05-04T05:42:15.139Z</updated>
+    <updated>2026-05-16T10:56:56.004Z</updated>
   </entry>
   <entry>
     <author>
@@ -97,7 +97,7 @@
       <![CDATA[<p>Python 3.10 更新了模式匹配，也就是 match-case。这并不是简简单单的对 C 语言 switch-case 的模仿，事实上 switch-case 是完全可以由 if-elif-elif… 代替的，而 match-case 最大的提升就是支持了解构——一种]]>
     </summary>
     <title>Python 3.10 模式匹配 match-case</title>
-    <updated>2026-05-04T05:41:44.623Z</updated>
+    <updated>2026-05-16T10:56:58.845Z</updated>
   </entry>
   <entry>
     <author>
@@ -120,7 +120,7 @@
 <p>一个有意思的事实是，Python 的字典的 <code>.keys()</code> 和 <code>.items()</code> 方法返回的是两个内置的视图对象，且无法被外部直接拿去使用（但可以获取该实例）。它们属于<strong>]]>
     </summary>
     <title>Python 字典与集合的有趣事实</title>
-    <updated>2026-05-04T09:43:57.768Z</updated>
+    <updated>2026-05-16T10:56:38.852Z</updated>
   </entry>
   <entry>
     <author>
@@ -142,7 +142,7 @@
 <p>Python 的很多东西其实都是基于 dict（函数的形参在内部就使用了 dict 结构），有人说过 Python 其实就是个包裹在一堆语法糖中的字典，也正因此 Python 对 dict 进行了特殊优化，处理速度非常快。set 也是同]]>
     </summary>
     <title>Python 小知识：字典、队列与排序</title>
-    <updated>2026-05-04T09:43:43.646Z</updated>
+    <updated>2026-05-16T10:56:51.908Z</updated>
   </entry>
   <entry>
     <author>
@@ -164,7 +164,7 @@
 <p>切片远比你想象的强大。你常见的惯用法可能是 <code>list[start:stop:step]</code>，但事实上 Python 支持多维切片，也就是 <code>[i, j]</code>，它会作为元组传入。之所以 Pytho]]>
     </summary>
     <title>Python 切片进阶用法</title>
-    <updated>2026-05-04T09:44:18.390Z</updated>
+    <updated>2026-05-16T10:56:42.391Z</updated>
   </entry>
   <entry>
     <author>
@@ -190,7 +190,7 @@
 <h2 id]]>
     </summary>
     <title>Hexo静态博客-0成本搭建一个像本站一样的博客站，并使用Netlify加速</title>
-    <updated>2026-05-04T05:41:32.113Z</updated>
+    <updated>2026-05-16T10:57:06.152Z</updated>
   </entry>
   <entry>
     <author>
@@ -214,6 +214,6 @@ Python<br>
 技]]>
     </summary>
     <title>老汤圆の博客站正式建立啦！</title>
-    <updated>2026-05-03T09:25:11.570Z</updated>
+    <updated>2026-05-16T10:56:48.563Z</updated>
   </entry>
 </feed>

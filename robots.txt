@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://blog.oldtangyuan.top/sitemap.xml
+Sitemap: https://blog.oldtangyuan.top/baidusitemap.xml
